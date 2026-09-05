@@ -53,7 +53,7 @@
   "scan_timer_id": "sub_a82c8a58-d12e-4a13-81ce-88f6ed2c681e",
   "alerts_sent": 4,
   "watchlist": "/workspace/.mortgage-leads/watchlist.json",
-  "last_scan_at": "2026-09-05T10:25:43Z",
+  "last_scan_at": "2026-09-05T10:28:36Z",
   "last_scan_new_leads": 0,
-  "last_scan_notes": "Rescan complete: existing watchlist + 6 verified new NH videos; 0 comments newer than prior scan; no new advice leads emailed (no spam). X MCP discovery still broken; Composio Twitter needs custom auth at dashboard. Pushover+Facebook still Initiated \u2014 fresh connect links regenerated this cycle. Zapier Pushover/Facebook Pages enabled but 0 auth connections. Timer nh-mortgage-lead-scan active every 4h."
+  "last_scan_notes": "Rescan: 38+ watchlist videos, ~202 comments; 0 newer than prior scan; no new advice leads emailed. Checked shopping-lenders thread again \u2014 only previously alerted comments. Added: IeMSnNV0GxY. X MCP discovery still broken; Composio Twitter needs custom auth at dashboard. Pushover+Facebook still Initiated (links expire ~10m). Zapier Pushover/Facebook Pages enabled but 0 auth connections. Timer nh-mortgage-lead-scan active every 4h."
 }
