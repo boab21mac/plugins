@@ -1,0 +1,4 @@
+{
+  "name": "Cursor plugins marketplace",
+  "install": "npm install --no-save ajv ajv-formats"
+}
