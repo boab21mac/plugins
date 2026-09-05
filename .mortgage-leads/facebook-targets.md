@@ -28,5 +28,5 @@ Focus rule: prefer groups/pages with frequent posts + buyer ISO (“in search of
 
 ## Next step when Bob is ready
 
-1. Bob joins Priority 1–2 from the table above in Facebook.
+1. Bob joins Priority 1–2 from the table above in Facebook (email him **only** for join/comment asks — see `ops-preferences.md`).
 2. Tell the agent “Facebook joined” — then we can discuss monitoring (manual paste, Zapier Page mentions if applicable, or a future user-token tool).

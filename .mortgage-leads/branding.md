@@ -39,3 +39,4 @@ Bob Duncan | Duncan & Co Financial | Free 15-min options call
 ## Alert emails to Bob (internal)
 - Subject still phone-friendly (🔔 Mortgage leads…).
 - Body may stay operational; any *customer-facing draft* inside the alert must use the sign-offs above and must not say Rettie.
+- **Email Bob only when he must act:** join a Facebook group/page, or approve/post a comment. No status, scan-empty, connect-nag, or ops update emails.
