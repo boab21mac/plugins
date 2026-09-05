@@ -53,7 +53,7 @@
   "scan_timer_id": "sub_88bf0e7c-6904-456f-9328-19534b0ca781",
   "alerts_sent": 4,
   "watchlist": "/workspace/.mortgage-leads/watchlist.json",
-  "last_scan_at": "2026-09-05T10:11:07Z",
-  "last_scan_new_leads": 3,
-  "last_scan_notes": "Alert #4 emailed: VA vs conventional (@liamo9165), USDA % (@HokyunAn), soft home-search (@Jose-qh7er) on zN0em9cbSZw. Expanded watchlist +6 videos. X MCP broken. Pushover+Facebook still Initiated. Zapier FB/Pushover enabled but 0 connections."
+  "last_scan_at": "2026-09-05T10:15:52Z",
+  "last_scan_new_leads": 0,
+  "last_scan_notes": "Rescan after Alert #4: 0 comments newer than prior alert. Added 5 fresh NH videos (Tim Amsden/Bard/market) \u2014 no comments yet. X MCP still broken; Composio Twitter needs custom auth setup. Pushover+Facebook still Initiated (not Active). Zapier FB/Pushover/SMS have 0 connections."
 }
