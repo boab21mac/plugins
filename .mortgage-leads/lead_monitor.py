@@ -118,13 +118,49 @@ BOOKING_QS = [
     'Want a free 15-min options call — morning or evening?',
 ]
 
-if __name__ == '__main__':
-    a = load_alerted()
-    w = load_watchlist()
-    print('alerts_sent', a.get('alerts_sent'))
-    print('alerted_ids', len(a.get('alerted_comment_ids') or []))
-    print('videos', len(w.get('priority_video_ids') or []))
-    print('brand', (w.get('brand') or {}).get('name'))
+
+def comment_url(video_id: str, comment_id: str) -> str:
+    return f'https://www.youtube.com/watch?v={video_id}&lc={comment_id}'
+
+
+def format_email_alert(leads) -> tuple[str, str]:
+    """Build Outlook subject/body for advice-seeking leads (Duncan & Co Financial)."""
+    n = len(leads)
+    subject = f'🔔 Mortgage leads: {n} people asking for advice'
+    lines = [
+        f'{n} new YouTube comment(s) look like mortgage advice requests.',
+        'Brand: Duncan & Co Financial (never Rettie). Do not post/book without confirming.',
+        '',
+    ]
+    for i, lead in enumerate(leads, 1):
+        vid = lead.get('videoId') or lead.get('video_id') or ''
+        cid = lead.get('id') or ''
+        lines += [
+            f'--- Lead {i} (score {lead.get("score", "?")}) ---',
+            f'Handle: {lead.get("author") or "?"}',
+            f'Comment: {lead.get("text") or ""}',
+            f'Link: {comment_url(vid, cid)}',
+            f'Qualifying Q: {BOOKING_QS[1] if lead.get("nh") else BOOKING_QS[0]}',
+            f'Booking close: {BOOKING_QS[-1]}',
+            '',
+        ]
+    lines.append('Sign-off if you reply: Bob Duncan | Duncan & Co Financial | Free 15-min options call')
+    return subject, '\n'.join(lines)
+
+
+def format_pushover_alert(leads) -> str:
+    """Short phone-friendly Pushover body for top 1–2 leads."""
+    top = leads[:2]
+    parts = [f'🔔 {len(leads)} mortgage lead(s)']
+    for lead in top:
+        handle = lead.get('author') or '?'
+        text = (lead.get('text') or '').replace('\n', ' ')[:120]
+        vid = lead.get('videoId') or lead.get('video_id') or ''
+        cid = lead.get('id') or ''
+        parts.append(f'{handle}: {text}')
+        if vid and cid:
+            parts.append(comment_url(vid, cid))
+    return '\n'.join(parts)
 
 
 def summarize_scan(comments, last_scan_at=None, min_score=4):
@@ -146,3 +182,12 @@ def summarize_scan(comments, last_scan_at=None, min_score=4):
         'alert_email': a.get('alert_email'),
         'platforms': a.get('platforms') or {},
     }
+
+
+if __name__ == '__main__':
+    a = load_alerted()
+    w = load_watchlist()
+    print('alerts_sent', a.get('alerts_sent'))
+    print('alerted_ids', len(a.get('alerted_comment_ids') or []))
+    print('videos', len(w.get('priority_video_ids') or []))
+    print('brand', (w.get('brand') or {}).get('name'))

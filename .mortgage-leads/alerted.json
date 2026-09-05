@@ -53,9 +53,9 @@
   "scan_timer_id": "sub_44bb098d-7b4a-4968-833c-bf38cb031223",
   "alerts_sent": 4,
   "watchlist": "/workspace/.mortgage-leads/watchlist.json",
-  "last_scan_at": "2026-09-05T12:18:47Z",
+  "last_scan_at": "2026-09-05T12:20:31Z",
   "last_scan_new_leads": 0,
-  "last_scan_notes": "12:18 UTC: rescanned high-yield comment threads (~193 comments). 0 comments newer than prior last_scan_at; no email. Newest activity still Aug 24\u2013Sep 3 spam/old advice. Pushover still Initiated (fresh link). X MCP discovery still broken. FB/X paused per Bob.",
+  "last_scan_notes": "12:19 UTC: quick high-yield rescan; 0 comments newer than prior scan; no email. Added email/Pushover alert formatters in lead_monitor.py. Pushover still Initiated \u2014 fresh link stored. X MCP still broken; FB/X paused per Bob.",
   "last_scan_note": "12:00 UTC timer: watchlist+search scan; 0 comments newer than prior last_scan; no email. Weak unalerted leftovers skipped (opinions/FL cash/creator promo/NY movers). X MCP broken; FB/Pushover not Active; Bob paused FB/X connect until ready.",
   "platforms": {
     "youtube": "active",
@@ -65,10 +65,9 @@
     "pushover": "initiated_need_bob_connect"
   },
   "next_actions_for_bob": [
-    "Connect Pushover (phone alerts): https://connect.composio.dev/link/lk_1-Ybmk7bAvZN",
-    "Optional SMS backup via Zapier: https://mcp.zapier.com/api/v1/connect-auth/SMSCLIAPI?accountId=28580636",
+    "Connect Pushover for phone alerts: https://connect.composio.dev/link/lk_I8vP46K3LYgB",
     "When ready: reconnect Facebook + X (paused per your request)"
   ],
-  "pushover_connect_url": "https://connect.composio.dev/link/lk_1-Ybmk7bAvZN",
-  "pushover_connect_note": "Fresh Composio Pushover link (~10m expiry). Zapier Pushover backup: https://mcp.zapier.com/api/v1/connect-auth/PushoverCLIAPI?accountId=28580636. Optional SMS path: https://mcp.zapier.com/api/v1/connect-auth/SMSCLIAPI?accountId=28580636"
+  "pushover_connect_url": "https://connect.composio.dev/link/lk_I8vP46K3LYgB",
+  "pushover_connect_note": "Fresh Composio Pushover link (~10m from ~12:19 UTC). Zapier backup: https://mcp.zapier.com/api/v1/connect-auth/PushoverCLIAPI?accountId=28580636"
 }
