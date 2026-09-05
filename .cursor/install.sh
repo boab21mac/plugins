@@ -17,10 +17,11 @@ if ! command -v bun >/dev/null 2>&1 && [ ! -x "$BUN_INSTALL/bin/bun" ]; then
   curl -fsSL https://bun.sh/install | bash
 fi
 export PATH="$BUN_INSTALL/bin:$PATH"
-# Expose bun on the always-on PATH so non-login agent shells find it.
-if [ -x "$BUN_INSTALL/bin/bun" ] && [ ! -e /usr/local/bin/bun ]; then
-  sudo ln -sf "$BUN_INSTALL/bin/bun" /usr/local/bin/bun
-  sudo ln -sf "$BUN_INSTALL/bin/bun" /usr/local/bin/bunx
+# Best-effort: also expose bun on the always-on PATH so non-login agent shells
+# find it. Never fatal — bun is already usable via the exported PATH above.
+if [ -x "$BUN_INSTALL/bin/bun" ] && [ ! -e /usr/local/bin/bun ] && command -v sudo >/dev/null 2>&1; then
+  sudo ln -sf "$BUN_INSTALL/bin/bun" /usr/local/bin/bun || true
+  sudo ln -sf "$BUN_INSTALL/bin/bun" /usr/local/bin/bunx || true
 fi
 
 # 3. Skill script project dependencies.
