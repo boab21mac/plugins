@@ -1,0 +1,107 @@
+{
+  "name": "CRM-Process-Inbound-Client-Email",
+  "properties": {
+    "displayName": "CRM - Process Inbound Client Email",
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "triggers": {
+        "When_a_new_email_arrives_in_a_shared_mailbox_V2": {
+          "type": "OpenApiConnectionNotification",
+          "inputs": {
+            "host": { "connectionName": "shared_office365", "operationId": "OnNewEmailV4" },
+            "parameters": {
+              "mailboxAddress": "<SHARED_MAILBOX@yourfirm.co.uk>",
+              "folderPath": "Inbox"
+            }
+          }
+        }
+      },
+      "actions": {
+        "Normalise_sender": {
+          "type": "Compose",
+          "inputs": "@toLower(trim(first(split(replace(replace(triggerOutputs()?['body/from'], '>', ''), '<', ''), '<'))))"
+        },
+        "Is_forwarded": {
+          "runAfter": { "Normalise_sender": ["Succeeded"] },
+          "type": "Compose",
+          "inputs": "@or(startsWith(toLower(triggerOutputs()?['body/subject']), 'fw:'), startsWith(toLower(triggerOutputs()?['body/subject']), 'fwd:'), contains(toLower(triggerOutputs()?['body/body']), 'forwarded message'))"
+        },
+        "Condition_forwarded": {
+          "runAfter": { "Is_forwarded": ["Succeeded"] },
+          "type": "If",
+          "expression": { "and": [{ "equals": ["@outputs('Is_forwarded')", true] }] },
+          "actions": {
+            "Do_not_trust_original_sender": {
+              "type": "Compose",
+              "inputs": "Create email-verification task. File the message. Do not auto-link identity from the nested From: header. Do not create proposed facts."
+            }
+          },
+          "else": {
+            "actions": {
+              "List_cases_by_applicant_email": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "ListRecords" },
+                  "parameters": {
+                    "entityName": "crm_cases",
+                    "$filter": "@concat('crm_applicant1email eq ''', outputs('Normalise_sender'), ''' or crm_applicant2email eq ''', outputs('Normalise_sender'), '''')"
+                  }
+                }
+              },
+              "Switch_match_count": {
+                "runAfter": { "List_cases_by_applicant_email": ["Succeeded"] },
+                "type": "Switch",
+                "expression": "@if(equals(length(body('List_cases_by_applicant_email')?['value']), 1), 'one', if(equals(length(body('List_cases_by_applicant_email')?['value']), 0), 'none', 'many'))",
+                "cases": {
+                  "one": { "actions": { "Auto_link": { "type": "Compose", "inputs": "If applicant 2 only, mark joint-match. Otherwise auto-link. If body asks to change email, hold for verification instead of patching crm_applicant1email." } } },
+                  "none": { "actions": { "Unmatched_task": { "type": "Compose", "inputs": "Create unmatched-correspondence task. Do not invent a case link." } } },
+                  "many": { "actions": { "Manual_case_selection": { "type": "Compose", "inputs": "Create manual case selection task. Do not apply facts." } } }
+                }
+              },
+              "Add_communication_history": {
+                "runAfter": { "Switch_match_count": ["Succeeded", "TimedOut", "Skipped"] },
+                "type": "Compose",
+                "inputs": "Create crm_communication inbound email row."
+              },
+              "Get_latest_five": {
+                "runAfter": { "Add_communication_history": ["Succeeded"] },
+                "type": "Compose",
+                "inputs": "@take(reverse(sort(body('List_communications'), 'crm_receivedon')), 5)"
+              },
+              "AI_Builder_extract": {
+                "runAfter": { "Get_latest_five": ["Succeeded"] },
+                "type": "Compose",
+                "inputs": {
+                  "updateSummary": "Short summary of what has changed",
+                  "conversationSummary": "Summary of the latest message in the context of prior communications",
+                  "proposedFacts": [
+                    {
+                      "crmField": "income.basicAnnual",
+                      "proposedValue": "62000",
+                      "sourceText": "my salary is now £62,000",
+                      "confidence": "high"
+                    }
+                  ],
+                  "actions": [{ "action": "Confirm updated salary evidence", "owner": "Adviser", "priority": "Medium" }],
+                  "replyDraft": "Draft client acknowledgement",
+                  "requiresManualReview": true
+                }
+              },
+              "Queue_proposed_facts": {
+                "runAfter": { "AI_Builder_extract": ["Succeeded"] },
+                "type": "Compose",
+                "inputs": "For each proposedFacts item create crm_proposedfact. Never patch protected fields. Show Existing → Proposed with Approve / Reject."
+              },
+              "Create_draft_reply_task": {
+                "runAfter": { "Queue_proposed_facts": ["Succeeded"] },
+                "type": "Compose",
+                "inputs": "Store replyDraft for the adviser. This flow must not Send an email automatically."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

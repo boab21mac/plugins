@@ -1,0 +1,83 @@
+{
+  "name": "CRM-Send-Client-Fact-Find",
+  "properties": {
+    "displayName": "CRM - Send Client Fact-Find",
+    "connectionReferences": {
+      "shared_commondataserviceforapps": { "source": "Embedded", "id": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps" },
+      "shared_office365": { "source": "Embedded", "id": "/providers/Microsoft.PowerApps/apis/shared_office365" }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "caseId": { "type": "string" }
+              },
+              "required": ["caseId"]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Get_case": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "GetItem" },
+            "parameters": { "entityName": "crm_cases", "recordId": "@triggerBody()?['caseId']" }
+          }
+        },
+        "Compose_invitation_ID": {
+          "runAfter": { "Get_case": ["Succeeded"] },
+          "type": "Compose",
+          "inputs": "@concat('INV-', replace(outputs('Get_case')?['body/crm_caseref'], '-', ''), '-', formatDateTime(utcNow(), 'yyyy-MM'))"
+        },
+        "Update_invitation_on_case": {
+          "runAfter": { "Compose_invitation_ID": ["Succeeded"] },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "UpdateRecord" },
+            "parameters": {
+              "entityName": "crm_cases",
+              "recordId": "@triggerBody()?['caseId']",
+              "item/crm_invitationid": "@outputs('Compose_invitation_ID')",
+              "item/crm_factfindstatus": "Invited",
+              "item/crm_invitationsenton": "@utcNow()"
+            }
+          }
+        },
+        "Send_Forms_link": {
+          "runAfter": { "Update_invitation_on_case": ["Succeeded"] },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": { "connectionName": "shared_office365", "operationId": "SendEmailV2" },
+            "parameters": {
+              "emailMessage/From": "@outputs('Get_case')?['body/crm_officemailbox']",
+              "emailMessage/To": "@outputs('Get_case')?['body/crm_applicant1email']",
+              "emailMessage/Subject": "@concat('Your mortgage fact-find — case ', outputs('Get_case')?['body/crm_caseref'])",
+              "emailMessage/Body": "@concat('<p>Please complete your fact-find. Invitation ', outputs('Compose_invitation_ID'), '</p><p>Case reference: ', outputs('Get_case')?['body/crm_caseref'], '</p>')"
+            }
+          }
+        },
+        "Add_communication_row": {
+          "runAfter": { "Send_Forms_link": ["Succeeded"] },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "CreateRecord" },
+            "parameters": {
+              "entityName": "crm_communications",
+              "item/crm_direction": "outbound",
+              "item/crm_channel": "invitation",
+              "item/crm_case": "@outputs('Get_case')?['body/crm_caseref']"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "CRM-Fact-Find-Invitation-Reminders",
+  "properties": {
+    "displayName": "CRM - Fact-Find Invitation Reminders",
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "triggers": {
+        "Recurrence": {
+          "type": "Recurrence",
+          "recurrence": {
+            "frequency": "Week",
+            "interval": 1,
+            "schedule": { "weekDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "hours": ["8"], "minutes": [30] },
+            "timeZone": "GMT Standard Time"
+          }
+        }
+      },
+      "actions": {
+        "List_open_invitations": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "ListRecords" },
+            "parameters": {
+              "entityName": "crm_cases",
+              "$filter": "crm_factfindstatus eq 'Invited' or crm_factfindstatus eq 'Reminder'"
+            }
+          }
+        },
+        "For_each_invitation": {
+          "runAfter": { "List_open_invitations": ["Succeeded"] },
+          "type": "Foreach",
+          "foreach": "@body('List_open_invitations')?['value']",
+          "actions": {
+            "Days_open": {
+              "type": "Compose",
+              "inputs": "@div(sub(ticks(utcNow()), ticks(items('For_each_invitation')?['crm_invitationsenton'])), 864000000000)"
+            },
+            "Switch_day": {
+              "runAfter": { "Days_open": ["Succeeded"] },
+              "type": "Switch",
+              "expression": "@if(greaterOrEquals(outputs('Days_open'), 14), 'expire', if(greaterOrEquals(outputs('Days_open'), 10), 'task', if(greaterOrEquals(outputs('Days_open'), 7), 'reminder7', if(greaterOrEquals(outputs('Days_open'), 3), 'reminder3', 'none'))))",
+              "cases": {
+                "reminder3": { "actions": { "Send_day_3_reminder": { "type": "Compose", "inputs": "Outlook send reminder 1. Patch crm_factfindstatus = Reminder." } } },
+                "reminder7": { "actions": { "Send_day_7_reminder": { "type": "Compose", "inputs": "Outlook send reminder 2." } } },
+                "task": { "actions": { "Create_adviser_task": { "type": "Compose", "inputs": "Create day-10 overdue adviser task." } } },
+                "expire": { "actions": { "Expire_invitation": { "type": "Compose", "inputs": "Patch crm_factfindstatus = Expired. Do not accept further submissions for this invitation ID." } } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

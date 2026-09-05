@@ -1,0 +1,121 @@
+{
+  "name": "CRM-Process-Client-Fact-Find-Submission",
+  "properties": {
+    "displayName": "CRM - Process Client Fact-Find Submission",
+    "connectionReferences": {
+      "shared_microsoftforms": { "source": "Embedded", "id": "/providers/Microsoft.PowerApps/apis/shared_microsoftforms" },
+      "shared_commondataserviceforapps": { "source": "Embedded", "id": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps" },
+      "shared_office365": { "source": "Embedded", "id": "/providers/Microsoft.PowerApps/apis/shared_office365" }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "triggers": {
+        "When_a_new_response_is_submitted": {
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": { "connectionName": "shared_microsoftforms", "operationId": "CreateFormWebhook" },
+            "parameters": { "form_id": "<PASTE_FORM_ID>" }
+          }
+        }
+      },
+      "actions": {
+        "Get_response_details": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": { "connectionName": "shared_microsoftforms", "operationId": "GetFormResponseById" },
+            "parameters": {
+              "form_id": "<PASTE_FORM_ID>",
+              "response_id": "@triggerBody()?['resourceData']?['responseId']"
+            }
+          }
+        },
+        "Validate_case_and_invitation": {
+          "runAfter": { "Get_response_details": ["Succeeded"] },
+          "type": "Compose",
+          "inputs": "@and(not(empty(trim(body('Get_response_details')?['caseReference']))), not(empty(trim(body('Get_response_details')?['invitationId']))))"
+        },
+        "Condition_valid": {
+          "runAfter": { "Validate_case_and_invitation": ["Succeeded"] },
+          "type": "If",
+          "expression": { "and": [{ "equals": ["@outputs('Validate_case_and_invitation')", true] }] },
+          "actions": {
+            "Create_immutable_submission": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "CreateRecord" },
+                "parameters": {
+                  "entityName": "crm_factfindsubmissions",
+                  "item/crm_caseref": "@body('Get_response_details')?['caseReference']",
+                  "item/crm_invitationid": "@body('Get_response_details')?['invitationId']",
+                  "item/crm_immutable": true,
+                  "item/crm_payload": "@string(body('Get_response_details'))"
+                }
+              }
+            },
+            "Map_and_hold_proposed_changes": {
+              "runAfter": { "Create_immutable_submission": ["Succeeded"] },
+              "type": "Compose",
+              "inputs": "For each mapped field: if importBehaviour is propose-review OR the field is protected OR a value already exists, create crm_proposedfact (existing → proposed). Never patch identity, income, employment, loan amount, completion, protection, benefits, bank details or case stage."
+            },
+            "Create_related_child_records": {
+              "runAfter": { "Map_and_hold_proposed_changes": ["Succeeded"] },
+              "type": "Compose",
+              "inputs": "Create crm_protectionpolicy rows (source=Private or Mortgage-linked) and crm_employerbenefit rows. Do not flatten onto the case."
+            },
+            "Create_review_and_evidence_tasks": {
+              "runAfter": { "Create_related_child_records": ["Succeeded"] },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "CreateRecord" },
+                "parameters": {
+                  "entityName": "crm_tasks",
+                  "item/subject": "Adviser review — fact-find submission",
+                  "item/crm_type": "adviser-review"
+                }
+              }
+            },
+            "Update_factfind_status": {
+              "runAfter": { "Create_review_and_evidence_tasks": ["Succeeded"] },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "UpdateRecord" },
+                "parameters": {
+                  "entityName": "crm_cases",
+                  "item/crm_factfindstatus": "In review"
+                }
+              }
+            },
+            "Send_client_acknowledgement": {
+              "runAfter": { "Update_factfind_status": ["Succeeded"] },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": { "connectionName": "shared_office365", "operationId": "SendEmailV2" },
+                "parameters": {
+                  "emailMessage/Subject": "@concat('We have received your fact-find — ', body('Get_response_details')?['caseReference'])",
+                  "emailMessage/Body": "Thank you. An adviser will review the information before any verified details are changed."
+                }
+              }
+            },
+            "Record_audit_event": {
+              "runAfter": { "Send_client_acknowledgement": ["Succeeded"] },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": { "connectionName": "shared_commondataserviceforapps", "operationId": "CreateRecord" },
+                "parameters": { "entityName": "crm_auditevents", "item/crm_action": "Fact-find processed" }
+              }
+            }
+          },
+          "else": {
+            "actions": {
+              "Reject_invalid_submission": {
+                "type": "Compose",
+                "inputs": "Terminate: invalid case reference, invitation ID, expired invitation, or declarations not accepted."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

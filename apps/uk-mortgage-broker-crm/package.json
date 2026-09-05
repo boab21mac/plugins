@@ -1,0 +1,23 @@
+{
+  "name": "uk-mortgage-broker-crm",
+  "private": true,
+  "version": "2.0.0",
+  "description": "UK Mortgage Broker CRM V2 — fact-find forms, Power Automate simulator, field mapping, inbound email review. Not a Cursor marketplace plugin.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}
