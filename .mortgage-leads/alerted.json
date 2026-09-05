@@ -4,6 +4,7 @@
     "Ugw2yOWVJiGL9m1sIWV4AaABAg",
     "Ugw3Z4Wh_FmMg-EFyU54AaABAg",
     "Ugw6jpF_D_TryXmvQhJ4AaABAg",
+    "UgwRdj35nLncs7idA4l4AaABAg",
     "UgwYGhkWxPKNf3O4Fc14AaABAg",
     "Ugw_cnPGfs8XoZ6p4_h4AaABAg",
     "UgwgCrVcymXKLFadQh54AaABAg",
@@ -22,6 +23,7 @@
     "Ugy3j7MmwLllfdG0kmd4AaABAg",
     "UgyILDQSnRKA1f-IBGl4AaABAg",
     "UgyPO8KbTecv8YHvIMx4AaABAg",
+    "UgyPxYtpjP_TsYzwEeZ4AaABAg",
     "UgyQ9IgJ4rfaVY7XPwp4AaABAg",
     "UgyTIJTwQmfRbBOjCP94AaABAg",
     "UgygSsJifZa2Rq0zP1l4AaABAg",
@@ -43,14 +45,15 @@
     "UgzkgO3HThtEwm2_hiB4AaABAg",
     "Ugzmzkre-b25EOcvLRB4AaABAg",
     "UgzrCGPx1WSSXsC59Ad4AaABAg",
+    "Ugzri9z0boGXjjDd7Ml4AaABAg",
     "UgzwDjeFe0glEj2W_xN4AaABAg"
   ],
-  "last_email_alert_at": "2026-09-05T09:50:48Z",
+  "last_email_alert_at": "2026-09-05T10:11:07Z",
   "alert_email": "Robert.Duncan@duncanandcofinancial.co.uk",
   "scan_timer_id": "sub_88bf0e7c-6904-456f-9328-19534b0ca781",
-  "alerts_sent": 3,
+  "alerts_sent": 4,
   "watchlist": "/workspace/.mortgage-leads/watchlist.json",
-  "last_scan_at": "2026-09-05T10:04:00Z",
-  "last_scan_new_leads": 0,
-  "last_scan_notes": "Full 17-video rescan + 4 new NH videos. 0 actionable NEW leads since prior alert (no email). X MCP broken. Pushover+Facebook still Initiated."
+  "last_scan_at": "2026-09-05T10:11:07Z",
+  "last_scan_new_leads": 3,
+  "last_scan_notes": "Alert #4 emailed: VA vs conventional (@liamo9165), USDA % (@HokyunAn), soft home-search (@Jose-qh7er) on zN0em9cbSZw. Expanded watchlist +6 videos. X MCP broken. Pushover+Facebook still Initiated. Zapier FB/Pushover enabled but 0 connections."
 }
