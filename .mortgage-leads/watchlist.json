@@ -157,6 +157,26 @@
     {
       "id": "IeMSnNV0GxY",
       "why": "Reverse mortgage / retirement income strategy \u2014 advice-seeking seniors (new Sep 2026)"
+    },
+    {
+      "id": "D88o3vbKehw",
+      "why": "Good time to buy NH Aug 2026 \u2014 Bard Homes"
+    },
+    {
+      "id": "65uloBrK7NU",
+      "why": "Unlock multifamily / FHA \u2014 Ask A Mortgage Guy"
+    },
+    {
+      "id": "buDYAoJp3D0",
+      "why": "Tired of rent going up \u2014 Ask A Mortgage Guy"
+    },
+    {
+      "id": "VaTsd6o60sQ",
+      "why": "NH mortgage calculator before buying \u2014 buyer intent"
+    },
+    {
+      "id": "78X6pa9_b64",
+      "why": "NH realtor short \u2014 rate shopping buyers (Living In NH)"
     }
   ],
   "priority_channels": [
@@ -216,8 +236,7 @@
       "Rettie Financial Services"
     ],
     "tagline": "A first home deserves a real conversation",
-    "branding_doc": "OneDrive: Duncan and Co/Marketing/Brand/duncan-co-brand-final.docx",
-    "local_rules": "/workspace/.mortgage-leads/branding.md",
+    "branding_doc": "/workspace/.mortgage-leads/branding.md",
     "signoff_short": "Bob Duncan | Duncan & Co Financial | Free 15-min options call"
   }
 }

@@ -50,18 +50,24 @@
   ],
   "last_email_alert_at": "2026-09-05T10:11:07Z",
   "alert_email": "Robert.Duncan@duncanandcofinancial.co.uk",
-  "scan_timer_id": "sub_a82c8a58-d12e-4a13-81ce-88f6ed2c681e",
+  "scan_timer_id": "sub_c45b19bc-2a6e-4de9-8661-14b484f9450c",
   "alerts_sent": 4,
   "watchlist": "/workspace/.mortgage-leads/watchlist.json",
   "last_scan_at": "2026-09-05T12:04:06Z",
   "last_scan_new_leads": 0,
-  "last_scan_notes": "Rescan: 38+ watchlist videos, ~202 comments; 0 newer than prior scan; no new advice leads emailed. Checked shopping-lenders thread again \u2014 only previously alerted comments. Added: IeMSnNV0GxY. X MCP discovery still broken; Composio Twitter needs custom auth at dashboard. Pushover+Facebook still Initiated (links expire ~10m). Zapier Pushover/Facebook Pages enabled but 0 auth connections. Timer nh-mortgage-lead-scan active every 4h.",
+  "last_scan_notes": "Rescan: 38+ watchlist videos, ~202 comments; 0 newer than prior scan; no new advice leads emailed. Checked shopping-lenders thread again \u2014 only previously alerted comments. Added: IeMSnNV0GxY. X MCP discovery still broken; Composio Twitter needs custom auth at dashboard. Pushover+Facebook still Initiated (links expire ~10m). Zapier Pushover/Facebook Pages enabled but 0 auth connections. Timer nh-mortgage-lead-scan active every 4h. | Post-scan harden: expanded watchlist (+NH calculator/shorts), strict newer-than-scan filter in lead_monitor.py, Pushover reconnect link regenerated (not Active). FB/X still paused per Bob. Brand locked Duncan & Co Financial / never Rettie.",
   "last_scan_note": "12:00 UTC timer: watchlist+search scan; 0 comments newer than prior last_scan; no email. Weak unalerted leftovers skipped (opinions/FL cash/creator promo/NY movers). X MCP broken; FB/Pushover not Active; Bob paused FB/X connect until ready.",
   "platforms": {
     "youtube": "active",
     "outlook_email": "active",
-    "x": "broken_mcp_and_composio_custom_auth_needed",
-    "facebook": "paused_awaiting_bob",
-    "pushover": "not_active"
-  }
+    "x": "broken_mcp_paused_per_bob",
+    "facebook": "paused_per_bob",
+    "pushover": "initiated_need_bob_connect"
+  },
+  "next_actions_for_bob": [
+    "Connect Pushover for phone alerts (link regenerated on each scan until Active)",
+    "When ready: reconnect Facebook + X (paused per your request)"
+  ],
+  "pushover_connect_url": "https://connect.composio.dev/link/lk_7s-bQZRXmpR7",
+  "pushover_connect_note": "Expires ~10 minutes from 12:07 UTC; regenerate if stale. Zapier backup: https://mcp.zapier.com/api/v1/connect-auth/PushoverCLIAPI?accountId=28580636"
 }

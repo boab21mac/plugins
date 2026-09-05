@@ -49,22 +49,41 @@ def score_comment(text: str) -> int:
     return score
 
 
-def filter_new_leads(comments, alerted_ids, last_scan_at=None, min_score=4):
+def filter_new_leads(
+    comments,
+    alerted_ids,
+    last_scan_at=None,
+    min_score=4,
+    *,
+    only_newer_than_scan=True,
+    allow_high_score_backlog=False,
+    backlog_min_score=8,
+):
+    """Return scored advice-seeking comments not yet alerted.
+
+    Default: only comments published after last_scan_at (when set).
+    Set only_newer_than_scan=False or allow_high_score_backlog=True to
+    surface older high-score leftovers intentionally.
+    """
     out = []
     for c in comments:
         cid = c.get('id')
         if not cid or cid in alerted_ids:
             continue
-        if last_scan_at and (c.get('published') or '') <= last_scan_at:
-            # still allow high-score backlog only when explicitly requested
-            pass
+        published = c.get('published') or ''
+        is_stale = bool(last_scan_at and published and published <= last_scan_at)
+        if is_stale and only_newer_than_scan and not allow_high_score_backlog:
+            continue
         score = score_comment(c.get('text') or '')
+        if is_stale and allow_high_score_backlog and score < backlog_min_score:
+            continue
         if score >= min_score:
             c = dict(c)
             c['score'] = score
             c['nh'] = bool(NH_RE.search(c.get('text') or ''))
+            c['stale'] = is_stale
             out.append(c)
-    out.sort(key=lambda x: (-x['score'], x.get('published') or ''))
+    out.sort(key=lambda x: (-x['score'], x.get('published') or ''), reverse=False)
     return out
 
 
