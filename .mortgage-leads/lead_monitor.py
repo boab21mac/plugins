@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Local helpers for NH mortgage lead monitor state."""
+"""Local helpers for mortgage lead monitor state (Duncan & Co Financial)."""
 from __future__ import annotations
 import json, re
+from datetime import datetime, timezone
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -9,15 +10,29 @@ BASE = Path('/workspace/.mortgage-leads')
 ALERTED = BASE / 'alerted.json'
 WATCHLIST = BASE / 'watchlist.json'
 
+# Topic focus (locked): mortgage | first-time buyer | remortgage | buy-to-let
+# Do NOT prefer New Hampshire / NH / US regional geo in search or scoring.
+TOPIC_RE = re.compile(
+    r"\bmortgage\b|first[- ]?time( buyer)?|re-?mortgage|remortgage|"
+    r"buy[- ]?to[- ]?let|\bbtl\b|product transfer|landlord|"
+    r"deposit|stamp duty|\bltv\b|agreement in principle|\baip\b|"
+    r"mortgage in principle|\bmip\b|broker|lender",
+    re.I,
+)
 ADVICE_RE = re.compile(
-    r"looking for|need (help|a lender|advice)|anyone recommend|should i|can i |"
-    r"how (do|can) i|pre-?approv|first[- ]?time|refinance|bankruptcy|"
-    r"talk to a lender|qualify|credit|pmi|usda|fha|va loan|conventional|"
-    r"down payment|\?",
+    r"looking for|need (help|advice|a (broker|lender|mortgage))|"
+    r"anyone recommend|should i|can i |how (do|can) i|"
+    r"first[- ]?time|re-?mortgage|remortgage|buy[- ]?to[- ]?let|\bbtl\b|"
+    r"pre-?approv|qualify|deposit|stamp duty|best (rate|deal|mortgage)|\?",
     re.I,
 )
 SPAM_RE = re.compile(r"unlock financial|loan solutions|sdn bhd|whatsapp|click here", re.I)
-NH_RE = re.compile(r"\bnh\b|new hampshire|manchester|nashua|concord|portsmouth|seacoast|new england", re.I)
+# Soft demote US-program noise (not a hard geo filter).
+US_PROGRAM_RE = re.compile(
+    r"\bfha\b|\busda\b|\bva loan\b|\bpmi\b|loan estimate|\bfico\b|"
+    r"new hampshire|\bnh\b",
+    re.I,
+)
 
 
 def load_alerted():
@@ -36,17 +51,23 @@ def score_comment(text: str) -> int:
     if len(text) < 30 or SPAM_RE.search(text) or not ADVICE_RE.search(text):
         return 0
     score = 0
-    if NH_RE.search(text):
-        score += 5
-    if re.search(r"talk to a lender|need (help|a lender)|looking for|anyone recommend|do you help", text, re.I):
+    if TOPIC_RE.search(text):
         score += 4
-    if re.search(r"bankruptcy|denied|unhappy|want out|lost .*lender", text, re.I):
-        score += 4
-    if re.search(r"first[- ]?time|pre-?approv|credit|pmi|usda|fha|va |conventional", text, re.I):
+    if re.search(r"first[- ]?time", text, re.I):
+        score += 3
+    if re.search(r"re-?mortgage|remortgage|product transfer", text, re.I):
+        score += 3
+    if re.search(r"buy[- ]?to[- ]?let|\bbtl\b|landlord", text, re.I):
+        score += 3
+    if re.search(r"\bmortgage\b", text, re.I):
         score += 2
+    if re.search(r"need (help|advice|a (broker|lender))|looking for|anyone recommend", text, re.I):
+        score += 4
     if re.search(r"should i|can i|how (do|can)|what about|\?", text, re.I):
         score += 2
-    return score
+    if US_PROGRAM_RE.search(text):
+        score -= 2
+    return max(score, 0)
 
 
 def filter_new_leads(
@@ -80,7 +101,13 @@ def filter_new_leads(
         if score >= min_score:
             c = dict(c)
             c['score'] = score
-            c['nh'] = bool(NH_RE.search(c.get('text') or ''))
+            text = c.get('text') or ''
+            c['topics'] = {
+                'mortgage': bool(re.search(r'\bmortgage\b', text, re.I)),
+                'first_time_buyer': bool(re.search(r'first[- ]?time', text, re.I)),
+                'remortgage': bool(re.search(r're-?mortgage|remortgage|product transfer', text, re.I)),
+                'buy_to_let': bool(re.search(r'buy[- ]?to[- ]?let|\bbtl\b|landlord', text, re.I)),
+            }
             c['stale'] = is_stale
             out.append(c)
     out.sort(key=lambda x: (-x['score'], x.get('published') or ''), reverse=False)
@@ -109,12 +136,11 @@ def mark_scan(new_leads=None, notes=''):
 
 
 BOOKING_QS = [
-    'Purchase or refinance?',
-    'Where are you buying / located? (NH filter)',
-    'First-time buyer?',
-    'Rough price or payment goal?',
-    'Timeline: 30 / 60 / 90 days?',
-    'Already with a lender? Happy with them?',
+    'Purchase, remortgage, or buy-to-let?',
+    'First-time buyer, home-mover, or landlord?',
+    'Rough price / equity / deposit position?',
+    'Timeline: this month / 3 months / 6 months?',
+    'Already speaking to a lender or broker? Happy with them?',
     'Want a free 15-min options call — morning or evening?',
 ]
 
@@ -123,12 +149,23 @@ def comment_url(video_id: str, comment_id: str) -> str:
     return f'https://www.youtube.com/watch?v={video_id}&lc={comment_id}'
 
 
+def _qualifying_q(lead) -> str:
+    topics = lead.get('topics') or {}
+    if topics.get('buy_to_let'):
+        return 'Buy-to-let purchase or remortgage — and is this your first rental?'
+    if topics.get('remortgage'):
+        return 'Remortgage for a better rate, raise capital, or product transfer?'
+    if topics.get('first_time_buyer'):
+        return 'First-time buyer — roughly what deposit and price range are you working to?'
+    return BOOKING_QS[0]
+
+
 def format_email_alert(leads) -> tuple[str, str]:
     """Build Outlook subject/body for advice-seeking leads (Duncan & Co Financial)."""
     n = len(leads)
     subject = f'🔔 Mortgage leads: {n} people asking for advice'
     lines = [
-        f'{n} new YouTube comment(s) look like mortgage advice requests.',
+        f'{n} new comment(s) look like mortgage / FTB / remortgage / buy-to-let advice requests.',
         'Brand: Duncan & Co Financial (never Rettie). Do not post/book without confirming.',
         '',
     ]
@@ -140,7 +177,7 @@ def format_email_alert(leads) -> tuple[str, str]:
             f'Handle: {lead.get("author") or "?"}',
             f'Comment: {lead.get("text") or ""}',
             f'Link: {comment_url(vid, cid)}',
-            f'Qualifying Q: {BOOKING_QS[1] if lead.get("nh") else BOOKING_QS[0]}',
+            f'Qualifying Q: {_qualifying_q(lead)}',
             f'Booking close: {BOOKING_QS[-1]}',
             '',
         ]
@@ -199,7 +236,6 @@ def connection_readiness(platforms=None) -> dict:
         'phone_push': pushover_ok,
         'x_scan': x_ok,
         'facebook_scan': facebook_ok,
-        # Interim: Outlook mobile push covers phone-reachable alerts until Pushover is Active
         'phone_reachable_via_email': email_ok,
         'end_state_ready': all([youtube_ok, email_ok, pushover_ok, x_ok, facebook_ok]),
         'blockers': [
@@ -236,5 +272,6 @@ if __name__ == '__main__':
     print('alerts_sent', a.get('alerts_sent'))
     print('alerted_ids', len(a.get('alerted_comment_ids') or []))
     print('videos', len(w.get('priority_video_ids') or []))
+    print('search_queries', w.get('search_queries'))
     print('brand', (w.get('brand') or {}).get('name'))
     print('readiness', connection_readiness())

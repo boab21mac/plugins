@@ -1,7 +1,11 @@
 {
-  "purpose": "Videos/channels to scan every 4h for people asking mortgage advice",
+  "purpose": "Scan every 4h for people asking about mortgage / first-time buyer / remortgage / buy-to-let advice",
   "alert_email": "Robert.Duncan@duncanandcofinancial.co.uk",
   "priority_video_ids": [
+    {
+      "id": "2iIssYZg47U",
+      "why": "Mortgage advice for first-time buyers 2026 \u2014 high FTB intent"
+    },
     {
       "id": "-lArKPvzm4Y",
       "why": "How to pick a lender \u2014 high advice-seeking comments"
@@ -9,54 +13,6 @@
     {
       "id": "aOfhgnHjiAo",
       "why": "FHA 2026 \u2014 first-time buyer questions"
-    },
-    {
-      "id": "54xBZDZiL74",
-      "why": "Buying first home in NH"
-    },
-    {
-      "id": "FwX6wFYkvLs",
-      "why": "PMI explained \u2014 Bard Homes NH (new)"
-    },
-    {
-      "id": "vFcmFAbTL04",
-      "why": "Fixed vs ARM \u2014 Bard Homes NH (new)"
-    },
-    {
-      "id": "ds5sN7xG1jU",
-      "why": "Buy or sell NH 2026"
-    },
-    {
-      "id": "O7vaM_EN4ZI",
-      "why": "NH housing market now \u2014 Shane Moynihan"
-    },
-    {
-      "id": "x3cRkkyWHWc",
-      "why": "NH down payment assistance 2026"
-    },
-    {
-      "id": "zgr99D0_sos",
-      "why": "First time buyer NH lender explain"
-    },
-    {
-      "id": "UvZrtxGFFMQ",
-      "why": "NH Housing $10k"
-    },
-    {
-      "id": "0I4XHAWZq6A",
-      "why": "Ask A Mortgage Guy NH $10k (new)"
-    },
-    {
-      "id": "U9swdvvuLxI",
-      "why": "Cost to buy in NH"
-    },
-    {
-      "id": "x_lWG5PKYB8",
-      "why": "TRUE cost buying NH 2026"
-    },
-    {
-      "id": "iSs0ekaxouY",
-      "why": "Buy home NH expert advice"
     },
     {
       "id": "-k3tBoDOEVs",
@@ -71,34 +27,6 @@
       "why": "Ramsey first-time program \u2014 high volume comments"
     },
     {
-      "id": "ycgQ9Ss5X-w",
-      "why": "NH Housing Market Just Flipped 2026 (new search)"
-    },
-    {
-      "id": "QmERH0y6hwI",
-      "why": "First-Time Home Buyers Guide buying in NH (new)"
-    },
-    {
-      "id": "eARHurJ8Qx0",
-      "why": "Is it a good time to buy a house in NH? (new)"
-    },
-    {
-      "id": "6EJlA9BeBQw",
-      "why": "Mary's Mortgage Minute Portsmouth NH (new)"
-    },
-    {
-      "id": "6inunne6Ep8",
-      "why": "Unlock $10K first home NH \u2014 Ask A Mortgage Guy"
-    },
-    {
-      "id": "mJ7bFE1XYRc",
-      "why": "Is $20k enough to buy house in NH 2026?"
-    },
-    {
-      "id": "AVaThsRxp44",
-      "why": "First-time buyer tips NH/MA/ME/FL 2026"
-    },
-    {
       "id": "cK0tlS9Lybw",
       "why": "5 questions to ask mortgage lender before getting mortgage"
     },
@@ -111,56 +39,12 @@
       "why": "7 questions to ask lender \u2014 beginners"
     },
     {
-      "id": "lmmVeoPiWlk",
-      "why": "NH-licensed: why first home should be multifamily (Tim Amsden, new Sep 2026)"
-    },
-    {
-      "id": "1XePtmWuz0U",
-      "why": "NH jumbo loans explained (Tim Amsden, new)"
-    },
-    {
-      "id": "XiJj7-_7idE",
-      "why": "Lets talk FHA \u2014 NH lending (Tim Amsden, new)"
-    },
-    {
-      "id": "7Tmlwt82DZ4",
-      "why": "Rate lock timing \u2014 Bard Homes NH (new)"
-    },
-    {
-      "id": "wNrwnaPVPVw",
-      "why": "2026 mid-year NH housing market review (new)"
-    },
-    {
-      "id": "pJG-M2AqcqM",
-      "why": "Cheshire County NH housing update July 2026 (Bard Homes)"
-    },
-    {
       "id": "Qjsewyu9LWc",
       "why": "House-hack / rental covering mortgage \u2014 advice seekers likely (new Sep 2026)"
     },
     {
-      "id": "ancHn8ZAgk0",
-      "why": "Open house staging pitfalls \u2014 Bard Homes NH buyers (new)"
-    },
-    {
-      "id": "PYI0o3oX1EQ",
-      "why": "Hillsborough County NH housing update July 2026 (Bard Homes)"
-    },
-    {
-      "id": "6I39ZIltwqE",
-      "why": "Sullivan County NH housing update July 2026 (Bard Homes)"
-    },
-    {
-      "id": "wKWNKBri5CI",
-      "why": "Belknap County NH housing update July 2026 (Bard Homes)"
-    },
-    {
       "id": "IeMSnNV0GxY",
       "why": "Reverse mortgage / retirement income strategy \u2014 advice-seeking seniors (new Sep 2026)"
-    },
-    {
-      "id": "D88o3vbKehw",
-      "why": "Good time to buy NH Aug 2026 \u2014 Bard Homes"
     },
     {
       "id": "65uloBrK7NU",
@@ -169,14 +53,6 @@
     {
       "id": "buDYAoJp3D0",
       "why": "Tired of rent going up \u2014 Ask A Mortgage Guy"
-    },
-    {
-      "id": "VaTsd6o60sQ",
-      "why": "NH mortgage calculator before buying \u2014 buyer intent"
-    },
-    {
-      "id": "78X6pa9_b64",
-      "why": "NH realtor short \u2014 rate shopping buyers (Living In NH)"
     },
     {
       "id": "MERZloKzpPc",
@@ -201,38 +77,6 @@
     {
       "id": "_lHdpr-DzEU",
       "why": "10 Steps to Buying a Home (What Nobody Tells First-Time Buyers) \u2014 Max Willett (API-verified)"
-    },
-    {
-      "id": "LZiM5_mXP88",
-      "why": "Dover NH Home Tour: 3 Value Picks Buyers Missed \u2014 LIVING ON THE SEACOAST NH - MICHELL (API-verified)"
-    },
-    {
-      "id": "m9GBaT0xtoI",
-      "why": "What Escrow Actually Is and Why It Protects You \u2014 Bard Homes of New Hampshire (API-verified)"
-    },
-    {
-      "id": "8C0_dvL5dsk",
-      "why": "The Closing Cost Nobody Explains \u2014 Bard Homes of New Hampshire (API-verified)"
-    },
-    {
-      "id": "5a-xn1bXC_0",
-      "why": "The Words in Your Contract That Protect Your Money \u2014 Bard Homes of New Hampshire (API-verified)"
-    },
-    {
-      "id": "yjZ-d1IWc1I",
-      "why": "What the Fed Just Did in July 2026 and What It Means for Your Mortgage Rate \u2014 Bard Homes of New Hampshire (API-verified)"
-    },
-    {
-      "id": "twDpGaCyb_g",
-      "why": "Why Your Mortgage Payment Isn&#39;t Just One Number \u2014 Bard Homes of New Hampshire (API-verified)"
-    },
-    {
-      "id": "6uICmMPZo60",
-      "why": "The Questions People Don&#39;t Ask \u2014 Bard Homes of New Hampshire (API-verified)"
-    },
-    {
-      "id": "xGtHKdZIC9A",
-      "why": "The Decision Nobody Can Make For You \u2014 Bard Homes of New Hampshire (API-verified)"
     },
     {
       "id": "dZMOovG4BR0",
@@ -301,14 +145,6 @@
       "name": "Robert Duncan (own channel \u2014 inbound leads)"
     },
     {
-      "id": "UCuLb1oZ0vwD-j4M9SRe2Mzg",
-      "name": "Bard Homes of New Hampshire"
-    },
-    {
-      "id": "UCwd4TIQOh83OePbuWUHlQUA",
-      "name": "Shane Moynihan"
-    },
-    {
       "id": "UC17o9sNJva5tJg94gVeJGpw",
       "name": "Ask A Mortgage Guy"
     },
@@ -324,25 +160,30 @@
   "advice_patterns": [
     "looking for",
     "need help",
-    "need a lender",
     "need a broker",
+    "need a lender",
     "anyone recommend",
-    "do you help",
+    "mortgage advice",
     "first time",
-    "pre-approv",
+    "first-time buyer",
+    "remortgage",
+    "re-mortgage",
+    "buy to let",
+    "buy-to-let",
+    "BTL",
     "should I",
     "can I get",
-    "refinance",
+    "deposit",
+    "stamp duty",
     "unhappy",
     "want out"
   ],
   "booking_questions": [
-    "Purchase or refinance?",
-    "Where are you buying / located? (filter NH)",
-    "First-time buyer?",
-    "Rough price or payment goal?",
-    "Timeline: 30 / 60 / 90 days?",
-    "Already with a lender? Happy with them?",
+    "Purchase, remortgage, or buy-to-let?",
+    "First-time buyer, home-mover, or landlord?",
+    "Rough price / equity / deposit position?",
+    "Timeline: this month / 3 months / 6 months?",
+    "Already speaking to a lender or broker? Happy with them?",
     "Want a free 15-min options call \u2014 morning or evening?"
   ],
   "brand": {
@@ -355,5 +196,24 @@
     "branding_doc": "/workspace/.mortgage-leads/branding.md",
     "signoff_short": "Bob Duncan | Duncan & Co Financial | Free 15-min options call"
   },
-  "last_verified_at": "2026-09-05T12:16:46Z"
+  "last_verified_at": "2026-09-05T13:07:48Z",
+  "search_queries": [
+    "mortgage advice",
+    "first time buyer mortgage",
+    "remortgage advice",
+    "re-mortgage rates",
+    "buy to let mortgage",
+    "buy-to-let remortgage",
+    "mortgage broker help",
+    "first time buyer deposit",
+    "should I remortgage",
+    "BTL mortgage landlord"
+  ],
+  "geo_filter": null,
+  "topic_filter": [
+    "mortgage",
+    "first time buyer",
+    "remortgage",
+    "buy to let"
+  ]
 }

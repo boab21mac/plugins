@@ -1,32 +1,38 @@
-# NH property Facebook targets (Duncan & Co Financial)
+# Mortgage / FTB / remortgage / buy-to-let Facebook targets
 
-Status: research shortlist only — **not joined/liked yet**. Facebook account is not connected for automation; Meta also does not expose reliable “join group / like page” actions via Zapier Pages.
+Status: research shortlist only — **not joined/liked yet**. No NH / New Hampshire geo filter.
 
-Focus rule: prefer groups/pages with frequent posts + buyer ISO (“in search of”) / open-house chatter over quiet listing dumps.
+**Search focus (locked):** mortgage · first-time buyer · remortgage · buy-to-let
 
-## Priority groups (high interaction signal)
+Facebook is not connected for automation; Meta does not expose reliable join/like via Zapier Pages. Bob joins manually; email him **only** for join/comment asks.
 
-| Priority | Name | Why | Link |
+## Priority groups / pages (high interaction signal)
+
+| Priority | Name | Why | Link / find |
 | --- | --- | --- | --- |
-| 1 | New Hampshire Real Estate (`nhreal`) | Active ISO buyer threads (price, towns, beds/baths) + listing posts — strong lead surface | https://www.facebook.com/groups/nhreal/ |
-| 1 | NH Public Open Houses | Frequent open-house posts with comments; buyers/agents engaging weekly | https://www.facebook.com/groups/559170250912091/ |
-| 2 | NH & MA Real Estate Collective | Cross-border NH/MA traffic; useful for Seacoast / southern NH buyers | https://www.facebook.com/groups/nhmarealestatecollective/ |
-| 2 | New Hampshire Real Estate Investors Association (page/hub) | Investor + financing adjacent discussions (Manchester area) | https://www.facebook.com/p/New-Hampshire-Real-Estate-Investors-Association-100057427219011/ |
+| 1 | UK First Time Buyers | High volume FTB deposit / mortgage / AIP questions | Search Facebook: `UK First Time Buyers` |
+| 1 | First Time Buyers UK Support | Active advice threads (mortgage, solicitors, surveys) | Search Facebook: `First Time Buyers UK` |
+| 1 | UK Remortgage / Rate Drop chat groups | People asking whether to remortgage or product-transfer | Search Facebook: `UK remortgage` / `remortgage advice` |
+| 1 | Buy To Let UK / UK Landlords | BTL purchase & remortgage stress-test questions | Search Facebook: `Buy To Let UK` / `UK Landlords mortgage` |
+| 2 | Mortgage Advice / Broker discussion groups (UK) | Direct “need a broker” posts | Search Facebook: `UK mortgage broker` / `mortgage advice UK` |
+| 2 | Property investment UK (BTL-heavy) | Landlords asking about refinancing & portfolio BTL | Search Facebook: `UK property investors` / `BTL remortgage` |
 
-## How to use (manual until FB user login is available)
+> Prefer groups with frequent posts + comments over quiet listing dumps. Skip US FHA/VA/PMI-centric groups.
 
-1. Join / Like the Priority 1 groups first while logged into Bob’s Facebook (or Duncan & Co page if using a Page identity where allowed).
-2. After joining, watch for: “ISO”, “first time buyer”, “pre-approval”, “mortgage”, “lender”, “can I afford”, “looking for advice”.
-3. Do **not** post marketing blasts. Soft helpful replies only after Bob confirms — brand as Duncan & Co Financial.
+## Watch phrases (after joining)
+
+- mortgage / broker / lender / AIP / MIP  
+- first time buyer / FTB / deposit / stamp duty / LTV  
+- remortgage / re-mortgage / product transfer / fixed deal ending  
+- buy to let / BTL / landlord / rental cover / stress test  
 
 ## Automation blockers (honest)
 
-- Zapier **Facebook Pages** = manage *your* page posts/insights — **cannot** search groups, join groups, or like third-party pages.
+- Zapier **Facebook Pages** cannot search/join groups or like third-party pages.
 - No Zapier **Facebook Groups** app available.
-- Composio Facebook tools are not available in this agent session right now.
-- Join/Like must be done in Facebook by Bob (or a connected user Graph API product we don’t have).
+- Join/Like must be done in Facebook by Bob.
 
-## Next step when Bob is ready
+## Next step
 
-1. Bob joins Priority 1–2 from the table above in Facebook (email him **only** for join/comment asks — see `ops-preferences.md`).
-2. Tell the agent “Facebook joined” — then we can discuss monitoring (manual paste, Zapier Page mentions if applicable, or a future user-token tool).
+1. Bob joins Priority 1 groups in Facebook (topic search above — **not** NH property groups).
+2. Tell the agent “Facebook joined” for monitoring next steps.

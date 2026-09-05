@@ -65,18 +65,24 @@
     "pushover": "initiated_need_bob_connect"
   },
   "next_actions_for_bob": [
-    "Connect Pushover for dedicated phone push: https://connect.composio.dev/link/lk_L-kM49DD5DHJ",
-    "Keep Outlook mobile notifications on (interim phone path already works for lead emails)",
-    "When ready: reconnect Facebook + X (paused per your request)"
+    "When ready: join Priority 1 Facebook groups in facebook-targets.md (mortgage / FTB / remortgage / BTL \u2014 not NH)",
+    "Tell the agent when Facebook groups are joined so monitoring can continue"
   ],
   "pushover_connect_url": "https://connect.composio.dev/link/lk_L-kM49DD5DHJ",
   "pushover_connect_note": "Fresh Composio Pushover link (expires ~10m). Zapier backup: https://mcp.zapier.com/api/v1/connect-auth/PushoverCLIAPI?accountId=28580636",
   "reconnect_playbook": {
     "pushover": "Open Composio/Zapier connect link; confirm Active before claiming phone push.",
-    "x": "Native X MCP discovery is broken. When ready: connect Composio twitter (often needs custom API auth in Composio dashboard), then enable recent-search for NH mortgage advice queries. Do not auto-nag while paused.",
-    "facebook": "When ready: connect Facebook Pages (managed pages only). Do not auto-nag while paused.",
+    "x": "Native X MCP discovery is broken. When ready: connect Composio twitter (often needs custom API auth), then recent-search for mortgage / first-time buyer / remortgage / buy-to-let advice queries. Do not auto-nag while paused.",
+    "facebook": "When ready: connect Facebook Pages if useful for page ops. Group join is still manual \u2014 use facebook-targets.md topic groups (mortgage/FTB/remortgage/BTL), not NH property groups. Do not auto-nag while paused.",
     "interim_phone": "Outlook mobile notifications already deliver lead emails to phone until Pushover is Active."
   },
-  "last_ops_at": "2026-09-05T12:23:27Z",
-  "last_ops_notes": "Hardened alert bundle + readiness helpers. Pushover still Initiated; regenerated connect link. X/FB still paused/broken. YouTube+Outlook active; Outlook mobile is interim phone-reachable path."
+  "last_ops_at": "2026-09-05T13:08:48Z",
+  "last_ops_notes": "Search focus retargeted: mortgage / first-time buyer / remortgage / buy-to-let. Removed NH geo boost. Facebook shortlist rewritten to topic groups. Email Bob only for join/comment.",
+  "search_focus": [
+    "mortgage",
+    "first time buyer",
+    "remortgage",
+    "buy to let"
+  ],
+  "geo_filter": null
 }
