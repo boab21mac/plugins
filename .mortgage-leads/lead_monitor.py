@@ -184,6 +184,52 @@ def summarize_scan(comments, last_scan_at=None, min_score=4):
     }
 
 
+def connection_readiness(platforms=None) -> dict:
+    """Snapshot of which alert channels are ready for the end-state goal."""
+    a = load_alerted()
+    platforms = platforms or a.get('platforms') or {}
+    youtube_ok = platforms.get('youtube') == 'active'
+    email_ok = platforms.get('outlook_email') == 'active'
+    pushover_ok = platforms.get('pushover') == 'active'
+    x_ok = platforms.get('x') == 'active'
+    facebook_ok = platforms.get('facebook') == 'active'
+    return {
+        'youtube_scan': youtube_ok,
+        'email_alerts': email_ok,
+        'phone_push': pushover_ok,
+        'x_scan': x_ok,
+        'facebook_scan': facebook_ok,
+        # Interim: Outlook mobile push covers phone-reachable alerts until Pushover is Active
+        'phone_reachable_via_email': email_ok,
+        'end_state_ready': all([youtube_ok, email_ok, pushover_ok, x_ok, facebook_ok]),
+        'blockers': [
+            k for k, ok in [
+                ('pushover', pushover_ok),
+                ('x', x_ok),
+                ('facebook', facebook_ok),
+            ] if not ok
+        ],
+    }
+
+
+def build_alert_bundle(leads) -> dict:
+    """Package email + Pushover payloads for a lead batch."""
+    subject, body = format_email_alert(leads)
+    return {
+        'count': len(leads),
+        'email': {
+            'to': (load_alerted().get('alert_email') or 'Robert.Duncan@duncanandcofinancial.co.uk'),
+            'subject': subject,
+            'body': body,
+        },
+        'pushover': {
+            'title': f'🔔 {len(leads)} mortgage lead(s)',
+            'message': format_pushover_alert(leads),
+        },
+        'readiness': connection_readiness(),
+    }
+
+
 if __name__ == '__main__':
     a = load_alerted()
     w = load_watchlist()
@@ -191,3 +237,4 @@ if __name__ == '__main__':
     print('alerted_ids', len(a.get('alerted_comment_ids') or []))
     print('videos', len(w.get('priority_video_ids') or []))
     print('brand', (w.get('brand') or {}).get('name'))
+    print('readiness', connection_readiness())
