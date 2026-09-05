@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>UK Mortgage Broker CRM V2</title>
+<style>
+:root{--navy:#0e2744;--gold:#b0893e;--cream:#f4efe6;--ink:#142033;--muted:#5c6774}
+body{margin:0;font-family:Georgia,serif;background:var(--cream);color:var(--ink);line-height:1.5}
+header{background:linear-gradient(160deg,#0a1b30,var(--navy));color:#f7f1e6;padding:28px 24px;border-bottom:3px solid var(--gold)}
+h1{margin:0 0 8px;font-size:28px}
+nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+nav a{color:#e8d7ad}
+main{max-width:960px;margin:0 auto;padding:24px}
+.card{background:#fffdf8;border:1px solid #d9d0c3;border-radius:10px;padding:18px;margin:16px 0}
+.q{border-top:1px solid #d9d0c3;padding:12px 0}
+.w{font-weight:700;margin:0 0 6px}
+.meta,.help{color:var(--muted);font-size:14px;font-family:system-ui,sans-serif}
+code,pre{font-family:ui-monospace,monospace;background:#122033;color:#e8d7ad;padding:2px 6px;border-radius:4px}
+pre{white-space:pre-wrap;padding:10px;overflow:auto}
+em{color:#8f2d2d;font-style:normal;font-size:13px}
+.opt{color:var(--muted);font-size:13px}
+.banner{background:#f8eedc;border:1px solid #e2c58a;padding:12px 16px;margin:16px 24px;font-family:system-ui,sans-serif}
+</style>
+</head>
+<body>
+<header>
+<p style="letter-spacing:.16em;text-transform:uppercase;color:#e8d7ad;font-size:12px;font-family:system-ui">Harbour &amp; Hart Mortgages</p>
+<h1>UK Mortgage Broker CRM V2</h1>
+<p>Forms template first, then Power Automate. Interactive simulator is in the repo at <code>apps/uk-mortgage-broker-crm</code>.</p>
+<nav>
+<a href="#forms">Forms template</a>
+<a href="#pa">Power Automate</a>
+<a href="#expr">Expressions</a>
+</nav>
+</header>
+<div class="banner"><strong>Microsoft 365:</strong> Outlook / Forms / Dataverse are not authenticated from the Cloud Agent environment, so live tenant flows were not published. Run <code>npm run dev</code> in the app folder for the working questionnaire, flow simulator and email intake.</div>
+<main>
+<section id="forms">
+<h2 style="font-size:30px">Client Fact-Find — Mortgage &amp; Protection</h2>
+<p>Microsoft Forms template for UK residential and buy-to-let cases. Prefill case reference and invitation ID from the CRM invitation. Sterling figures. Review-first: submissions never silently overwrite verified facts.</p>
+<div class="card"><h3>Branching rules</h3><ol><li>If Number of applicants = 1, hide every Applicant 2 and Applicant 2 income question.</li><li>If Number of applicants = 2, show Applicant 2 identity and income blocks.</li><li>If employment status is Employed (any), show employer name, time in role, basic, overtime, bonus, commission.</li><li>If employment status is Self-employed / limited company / partnership, show trading name, years trading and three years of profit.</li><li>If other income is blank or 0, hide the other-income notes question.</li><li>If purpose starts with Purchase, show agreed purchase price.</li><li>If purpose is Remortgage, Further advance or Product transfer, show remortgage reason.</li><li>If Commitments = Yes, show the repeating commitments list.</li><li>If Existing private insurance = Yes, show the private-policy repeater (child records).</li><li>If Employer benefits = Yes, show the employer-benefit repeater (child records).</li><li>If Mortgage-linked cover = Yes, show the mortgage-linked repeater (child records).</li><li>If Accuracy or Privacy declaration = No, Microsoft Forms should end; the Process Submission flow also rejects the response.</li><li>Selecting ‘None’ under schemes should clear other scheme choices (Forms branching or Power Automate normalisation).</li></ol></div>
+<section class="card"><h2>1. Applicants</h2><p>Collect who is applying and how we should contact them. Identity and email are protected CRM fields: a later inbound email cannot change them without adviser approval.</p><article class="q"><p class="w">Case reference (pre-filled — please do not change) <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>sys.caseReference</code> · CRM: <code>case.caseRef</code> · system</p>
+      <p class="help">Branching: Always shown. Invalid or blank references are rejected by the Process Submission flow.</p></article><article class="q"><p class="w">Invitation ID (pre-filled — please do not change) <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>sys.invitationId</code> · CRM: <code>invitation.id</code> · system</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">How many applicants are there on this mortgage? <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>applicants.count</code> · CRM: <code>case.applicantCount</code> · overwrite-if-empty</p>
+      <ul><li>1</li><li>2</li></ul><p class="help">Branching: Choosing 2 reveals the full Applicant 2 block.</p></article><article class="q"><p class="w">Applicant 1 — title <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>applicants.a1.title</code> · CRM: <code>applicants[0].title</code> · propose-review</p>
+      <ul><li>Mr</li><li>Mrs</li><li>Miss</li><li>Ms</li><li>Mx</li><li>Dr</li><li>Other</li></ul><p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — first name (as on passport or driving licence) <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a1.firstName</code> · CRM: <code>applicants[0].firstName</code> · propose-review</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — surname <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a1.lastName</code> · CRM: <code>applicants[0].lastName</code> · propose-review</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — date of birth <em>Required</em></p>
+      <p class="meta">Type: Date · Forms key: <code>applicants.a1.dob</code> · CRM: <code>applicants[0].dob</code> · propose-review</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — email address we should use for this case <em>Required</em></p>
+      <p class="meta">Type: Text (email) · Forms key: <code>applicants.a1.email</code> · CRM: <code>applicants[0].email</code> · propose-review</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — mobile number <em>Required</em></p>
+      <p class="meta">Type: Text (phone) · Forms key: <code>applicants.a1.mobile</code> · CRM: <code>applicants[0].mobile</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — nationality <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a1.nationality</code> · CRM: <code>applicants[0].nationality</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — UK residency status <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>applicants.a1.residency</code> · CRM: <code>applicants[0].residency</code> · overwrite-if-empty</p>
+      <ul><li>UK citizen / settled</li><li>Indefinite leave to remain</li><li>Limited leave to remain (visa)</li><li>EU Settled Status</li><li>EU Pre-Settled Status</li><li>Other — please describe in notes</li></ul><p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — marital status <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>applicants.a1.maritalStatus</code> · CRM: <code>applicants[0].maritalStatus</code> · overwrite-if-empty</p>
+      <ul><li>Single</li><li>Married</li><li>Civil partnership</li><li>Cohabiting</li><li>Separated</li><li>Divorced</li><li>Widowed</li></ul><p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — number of financially dependent children or adults <em>Required</em></p>
+      <p class="meta">Type: Number · Forms key: <code>applicants.a1.dependants</code> · CRM: <code>applicants[0].dependants</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — current address (including postcode) <em>Required</em></p>
+      <p class="meta">Type: Long answer · Forms key: <code>applicants.a1.address</code> · CRM: <code>applicants[0].address</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — time at current address <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>applicants.a1.timeAtAddress</code> · CRM: <code>applicants[0].timeAtAddress</code> · overwrite-if-empty</p>
+      <ul><li>Less than 6 months</li><li>6–12 months</li><li>1–3 years</li><li>3–5 years</li><li>More than 5 years</li></ul><p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — current residential status <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>applicants.a1.residentialStatus</code> · CRM: <code>applicants[0].residentialStatus</code> · overwrite-if-empty</p>
+      <ul><li>Homeowner with mortgage</li><li>Homeowner outright</li><li>Private tenant</li><li>Living with family</li><li>Social housing</li><li>Other</li></ul><p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — National Insurance number (optional at this stage) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a1.niNumber</code> · CRM: <code>applicants[0].niNumber</code> · propose-review</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 2 — title <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>applicants.a2.title</code> · CRM: <code>applicants[1].title</code> · propose-review</p>
+      <ul><li>Mr</li><li>Mrs</li><li>Miss</li><li>Ms</li><li>Mx</li><li>Dr</li><li>Other</li></ul><p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — first name (as on passport or driving licence) <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a2.firstName</code> · CRM: <code>applicants[1].firstName</code> · propose-review</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — surname <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a2.lastName</code> · CRM: <code>applicants[1].lastName</code> · propose-review</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — date of birth <em>Required</em></p>
+      <p class="meta">Type: Date · Forms key: <code>applicants.a2.dob</code> · CRM: <code>applicants[1].dob</code> · propose-review</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — email address we should use for this case <em>Required</em></p>
+      <p class="meta">Type: Text (email) · Forms key: <code>applicants.a2.email</code> · CRM: <code>applicants[1].email</code> · propose-review</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — mobile number <em>Required</em></p>
+      <p class="meta">Type: Text (phone) · Forms key: <code>applicants.a2.mobile</code> · CRM: <code>applicants[1].mobile</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — nationality <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a2.nationality</code> · CRM: <code>applicants[1].nationality</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — UK residency status <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>applicants.a2.residency</code> · CRM: <code>applicants[1].residency</code> · overwrite-if-empty</p>
+      <ul><li>UK citizen / settled</li><li>Indefinite leave to remain</li><li>Limited leave to remain (visa)</li><li>EU Settled Status</li><li>EU Pre-Settled Status</li><li>Other — please describe in notes</li></ul><p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — marital status <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>applicants.a2.maritalStatus</code> · CRM: <code>applicants[1].maritalStatus</code> · overwrite-if-empty</p>
+      <ul><li>Single</li><li>Married</li><li>Civil partnership</li><li>Cohabiting</li><li>Separated</li><li>Divorced</li><li>Widowed</li></ul><p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — number of financially dependent children or adults <em>Required</em></p>
+      <p class="meta">Type: Number · Forms key: <code>applicants.a2.dependants</code> · CRM: <code>applicants[1].dependants</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — current address (including postcode) <em>Required</em></p>
+      <p class="meta">Type: Long answer · Forms key: <code>applicants.a2.address</code> · CRM: <code>applicants[1].address</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — time at current address <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>applicants.a2.timeAtAddress</code> · CRM: <code>applicants[1].timeAtAddress</code> · overwrite-if-empty</p>
+      <ul><li>Less than 6 months</li><li>6–12 months</li><li>1–3 years</li><li>3–5 years</li><li>More than 5 years</li></ul><p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — current residential status <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>applicants.a2.residentialStatus</code> · CRM: <code>applicants[1].residentialStatus</code> · overwrite-if-empty</p>
+      <ul><li>Homeowner with mortgage</li><li>Homeowner outright</li><li>Private tenant</li><li>Living with family</li><li>Social housing</li><li>Other</li></ul><p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article><article class="q"><p class="w">Applicant 2 — National Insurance number (optional at this stage) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Text · Forms key: <code>applicants.a2.niNumber</code> · CRM: <code>applicants[1].niNumber</code> · propose-review</p>
+      <p class="help">Branching: Shown only when Number of applicants = 2 (joint application).</p></article></section><section class="card"><h2>2. Mortgage objectives</h2><p>What you are looking to arrange and by when. Loan amount and expected completion are protected: email updates are held for review.</p><article class="q"><p class="w">What is the main purpose of this mortgage? <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>mortgage.purpose</code> · CRM: <code>mortgage.purpose</code> · overwrite-if-empty</p>
+      <ul><li>Purchase — residential</li><li>Purchase — buy-to-let</li><li>Remortgage — residential</li><li>Remortgage — buy-to-let</li><li>Further advance / additional borrowing</li><li>Product transfer (same lender)</li><li>Let-to-buy / other</li></ul><p class="help">Branching: Always shown. Drives later remortgage and scheme questions.</p></article><article class="q"><p class="w">Property type <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>mortgage.propertyType</code> · CRM: <code>mortgage.propertyType</code> · overwrite-if-empty</p>
+      <ul><li>Terraced house</li><li>Semi-detached house</li><li>Detached house</li><li>Purpose-built flat</li><li>Converted flat</li><li>Maisonette</li><li>Bungalow</li><li>New-build house</li><li>New-build flat</li><li>Other</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Estimated current or purchase property value (£) <em>Required</em></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>mortgage.propertyValue</code> · CRM: <code>mortgage.propertyValue</code> · propose-review</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Agreed purchase price (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>mortgage.purchasePrice</code> · CRM: <code>mortgage.purchasePrice</code> · propose-review</p>
+      <p class="help">Branching: Shown when purpose starts with Purchase.</p></article><article class="q"><p class="w">Loan amount you would like to arrange (£) <em>Required</em></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>mortgage.loanAmount</code> · CRM: <code>mortgage.loanAmount</code> · propose-review</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Deposit or equity being used (£) <em>Required</em></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>mortgage.deposit</code> · CRM: <code>mortgage.deposit</code> · propose-review</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Preferred mortgage term (years) <em>Required</em></p>
+      <p class="meta">Type: Number · Forms key: <code>mortgage.termYears</code> · CRM: <code>mortgage.termYears</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Repayment type <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>mortgage.repaymentType</code> · CRM: <code>mortgage.repaymentType</code> · overwrite-if-empty</p>
+      <ul><li>Capital and interest (repayment)</li><li>Interest only</li><li>Part and part</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Rate preference <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>mortgage.ratePreference</code> · CRM: <code>mortgage.ratePreference</code> · overwrite-if-empty</p>
+      <ul><li>Fixed</li><li>Tracker</li><li>Discount</li><li>Standard variable</li><li>No preference — advise me</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Preferred initial deal period <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>mortgage.dealPeriod</code> · CRM: <code>mortgage.dealPeriod</code> · overwrite-if-empty</p>
+      <ul><li>2 years</li><li>3 years</li><li>5 years</li><li>10 years</li><li>No preference</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Expected completion or preferred completion date <em>Required</em></p>
+      <p class="meta">Type: Date · Forms key: <code>mortgage.expectedCompletion</code> · CRM: <code>mortgage.expectedCompletion</code> · propose-review</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Is Applicant 1 a first-time buyer? <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>mortgage.firstTimeBuyer</code> · CRM: <code>mortgage.firstTimeBuyer</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Are you using any of these schemes? <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Multi-choice · Forms key: <code>mortgage.scheme</code> · CRM: <code>mortgage.scheme</code> · overwrite-if-empty</p>
+      <ul><li>None</li><li>Help to Buy / Equity Loan (legacy)</li><li>Shared ownership</li><li>Right to Buy</li><li>Lifetime ISA / Help to Buy ISA</li><li>Gifted deposit</li><li>Guarantor</li></ul><p class="help">Branching: Always shown. Selecting None should be exclusive in Microsoft Forms branching.</p></article><article class="q"><p class="w">Main reason for remortgaging or additional borrowing <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Long answer · Forms key: <code>mortgage.remortgageReason</code> · CRM: <code>mortgage.remortgageReason</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Shown when purpose is Remortgage, Further advance or Product transfer.</p></article></section><section class="card"><h2>3. Income</h2><p>Affordability evidence. Basic pay, bonus and self-employed profits are protected. The flow will raise an evidence task for latest payslips or SA302s — it will not treat the form as verified income.</p><article class="q"><p class="w">Applicant 1 — employment status <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>income.a1.employmentStatus</code> · CRM: <code>income[0].employmentStatus</code> · propose-review</p>
+      <ul><li>Employed — permanent</li><li>Employed — fixed term</li><li>Employed — probation</li><li>Self-employed — sole trader</li><li>Self-employed — limited company</li><li>Partnership / LLP</li><li>Contractor / CIS</li><li>Retired</li><li>Not currently working</li></ul><p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — occupation / job title <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>income.a1.occupation</code> · CRM: <code>income[0].occupation</code> · propose-review</p>
+      <p class="help">Branching: Hidden if not currently working.</p></article><article class="q"><p class="w">Applicant 1 — employer name <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>income.a1.employerName</code> · CRM: <code>income[0].employerName</code> · propose-review</p>
+      <p class="help">Branching: Shown when employment status is Employed (any type).</p></article><article class="q"><p class="w">Applicant 1 — time in current role <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>income.a1.timeInRole</code> · CRM: <code>income[0].timeInRole</code> · overwrite-if-empty</p>
+      <ul><li>Less than 3 months</li><li>3–6 months</li><li>6–12 months</li><li>1–2 years</li><li>2–5 years</li><li>More than 5 years</li></ul><p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 1 — basic annual salary (£, before tax) <em>Required</em></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.basicAnnual</code> · CRM: <code>income[0].basicAnnual</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 1 — regular overtime in the last 12 months (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.overtime</code> · CRM: <code>income[0].overtime</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 1 — bonus in the last 12 months (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.bonus</code> · CRM: <code>income[0].bonus</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 1 — commission in the last 12 months (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.commission</code> · CRM: <code>income[0].commission</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 1 — trading / company name <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>income.a1.tradingName</code> · CRM: <code>income[0].tradingName</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed, limited company or partnership.</p></article><article class="q"><p class="w">Applicant 1 — years trading <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>income.a1.yearsTrading</code> · CRM: <code>income[0].yearsTrading</code> · overwrite-if-empty</p>
+      <ul><li>Less than 1 year</li><li>1 year</li><li>2 years</li><li>3 years or more</li></ul><p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 1 — latest year net profit / salary + dividends (£) <em>Required</em></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.netProfitY1</code> · CRM: <code>income[0].netProfitY1</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 1 — previous year net profit / salary + dividends (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.netProfitY2</code> · CRM: <code>income[0].netProfitY2</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 1 — year before last net profit / salary + dividends (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.netProfitY3</code> · CRM: <code>income[0].netProfitY3</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 1 — other annual income (£) — rental, pension, maintenance, taxable benefits <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a1.otherIncome</code> · CRM: <code>income[0].otherIncome</code> · propose-review</p>
+      <p class="help">Branching: Always shown for Applicant 1.</p></article><article class="q"><p class="w">Applicant 1 — describe other income (source and whether it is likely to continue) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Long answer · Forms key: <code>income.a1.otherIncomeNotes</code> · CRM: <code>income[0].otherIncomeNotes</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Shown when other income is greater than 0.</p></article><article class="q"><p class="w">Applicant 2 — employment status <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>income.a2.employmentStatus</code> · CRM: <code>income[1].employmentStatus</code> · propose-review</p>
+      <ul><li>Employed — permanent</li><li>Employed — fixed term</li><li>Employed — probation</li><li>Self-employed — sole trader</li><li>Self-employed — limited company</li><li>Partnership / LLP</li><li>Contractor / CIS</li><li>Retired</li><li>Not currently working</li></ul><p class="help">Branching: Shown only on a joint application.</p></article><article class="q"><p class="w">Applicant 2 — occupation / job title <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>income.a2.occupation</code> · CRM: <code>income[1].occupation</code> · propose-review</p>
+      <p class="help">Branching: Hidden if not currently working.</p></article><article class="q"><p class="w">Applicant 2 — employer name <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>income.a2.employerName</code> · CRM: <code>income[1].employerName</code> · propose-review</p>
+      <p class="help">Branching: Shown when employment status is Employed (any type).</p></article><article class="q"><p class="w">Applicant 2 — time in current role <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>income.a2.timeInRole</code> · CRM: <code>income[1].timeInRole</code> · overwrite-if-empty</p>
+      <ul><li>Less than 3 months</li><li>3–6 months</li><li>6–12 months</li><li>1–2 years</li><li>2–5 years</li><li>More than 5 years</li></ul><p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 2 — basic annual salary (£, before tax) <em>Required</em></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.basicAnnual</code> · CRM: <code>income[1].basicAnnual</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 2 — regular overtime in the last 12 months (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.overtime</code> · CRM: <code>income[1].overtime</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 2 — bonus in the last 12 months (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.bonus</code> · CRM: <code>income[1].bonus</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 2 — commission in the last 12 months (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.commission</code> · CRM: <code>income[1].commission</code> · propose-review</p>
+      <p class="help">Branching: Shown when employed.</p></article><article class="q"><p class="w">Applicant 2 — trading / company name <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>income.a2.tradingName</code> · CRM: <code>income[1].tradingName</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed, limited company or partnership.</p></article><article class="q"><p class="w">Applicant 2 — years trading <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>income.a2.yearsTrading</code> · CRM: <code>income[1].yearsTrading</code> · overwrite-if-empty</p>
+      <ul><li>Less than 1 year</li><li>1 year</li><li>2 years</li><li>3 years or more</li></ul><p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 2 — latest year net profit / salary + dividends (£) <em>Required</em></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.netProfitY1</code> · CRM: <code>income[1].netProfitY1</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 2 — previous year net profit / salary + dividends (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.netProfitY2</code> · CRM: <code>income[1].netProfitY2</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 2 — year before last net profit / salary + dividends (£) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.netProfitY3</code> · CRM: <code>income[1].netProfitY3</code> · propose-review</p>
+      <p class="help">Branching: Shown when self-employed.</p></article><article class="q"><p class="w">Applicant 2 — other annual income (£) — rental, pension, maintenance, taxable benefits <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>income.a2.otherIncome</code> · CRM: <code>income[1].otherIncome</code> · propose-review</p>
+      <p class="help">Branching: Shown only on a joint application.</p></article><article class="q"><p class="w">Applicant 2 — describe other income (source and whether it is likely to continue) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Long answer · Forms key: <code>income.a2.otherIncomeNotes</code> · CRM: <code>income[1].otherIncomeNotes</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Shown when other income is greater than 0.</p></article></section><section class="card"><h2>4. Commitments</h2><p>Regular outgoings that a lender will count. Capture each commitment as its own related record rather than a single text box.</p><article class="q"><p class="w">Do you have any regular credit commitments, rent, or childcare costs we should record? <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>commitments.hasAny</code> · CRM: <code>flags.hasCommitments</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Yes reveals the repeating commitments list.</p></article><article class="q"><p class="w">Add each commitment <em>Required</em></p>
+      <p class="meta">Type: Repeating section · Forms key: <code>commitments.items</code> · CRM: <code>commitments[]</code> · create-child</p>
+      <p class="help">Child records:</p><ul><li>Type of commitment → <code>commitments[].type</code></li><li>Lender / provider → <code>commitments[].lender</code></li><li>Monthly payment (£) → <code>commitments[].monthly</code></li><li>Approximate balance outstanding (£) → <code>commitments[].outstanding</code></li><li>To be repaid on completion? → <code>commitments[].toBeRepaid</code></li></ul><p class="help">Branching: Shown when the previous answer is Yes. Each row becomes a related Commitment record.</p></article></section><section class="card"><h2>5. Existing private insurance</h2><p>Policies you have arranged personally (not through an employer or the lender). Store as related Protection Policy records. Never flatten provider / sum assured into a single case text field.</p><article class="q"><p class="w">Do you have any existing personal life, illness, income or home insurance? <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>protection.private.hasAny</code> · CRM: <code>flags.hasPrivateInsurance</code> · propose-review</p>
+      <p class="help">Branching: Yes reveals the private-policy repeater.</p></article><article class="q"><p class="w">Existing private policies <em>Required</em></p>
+      <p class="meta">Type: Repeating section · Forms key: <code>protection.private.items</code> · CRM: <code>policies.private[]</code> · create-child</p>
+      <p class="help">Child records:</p><ul><li>Insurer / provider → <code>policies.private[].provider</code></li><li>Type of cover → <code>policies.private[].coverType</code></li><li>Sum assured / monthly benefit (£) → <code>policies.private[].sumAssured</code></li><li>Premium (£) → <code>policies.private[].premium</code></li><li>Premium frequency → <code>policies.private[].premiumFrequency</code></li><li>Remaining term or review date → <code>policies.private[].term</code></li><li>Written in trust? → <code>policies.private[].inTrust</code></li><li>Policy number (if known) → <code>policies.private[].policyNumber</code></li></ul><p class="help">Branching: Shown when Existing private insurance = Yes. Each row → crm_protectionpolicy (source = Private).</p></article></section><section class="card"><h2>6. Employer benefits</h2><p>Workplace death-in-service, sick pay and medical cover. These sit as Employer Benefit child records and are protected from silent email overwrite.</p><article class="q"><p class="w">Does either applicant have workplace benefits that would help if they died, were ill, or could not work? <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>benefits.employer.hasAny</code> · CRM: <code>flags.hasEmployerBenefits</code> · propose-review</p>
+      <p class="help">Branching: Yes reveals the employer-benefit repeater.</p></article><article class="q"><p class="w">Employer / workplace benefits <em>Required</em></p>
+      <p class="meta">Type: Repeating section · Forms key: <code>benefits.employer.items</code> · CRM: <code>benefits.employer[]</code> · create-child</p>
+      <p class="help">Child records:</p><ul><li>Benefit type → <code>benefits.employer[].type</code></li><li>Detail (for example 4 × salary, 26 weeks full pay) → <code>benefits.employer[].detail</code></li><li>Estimated value (£) if known → <code>benefits.employer[].value</code></li></ul><p class="help">Branching: Shown when Employer benefits = Yes. Each row → crm_employerbenefit.</p></article></section><section class="card"><h2>7. Mortgage-linked cover</h2><p>Cover sold with, or required by, a current or proposed mortgage (buildings panel, complimentary life cover, MPPI).</p><article class="q"><p class="w">Do you have, or have you been offered, any insurance linked to this or a current mortgage? <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>protection.linked.hasAny</code> · CRM: <code>flags.hasMortgageLinkedCover</code> · propose-review</p>
+      <p class="help">Branching: Yes reveals the mortgage-linked repeater.</p></article><article class="q"><p class="w">Mortgage-linked cover <em>Required</em></p>
+      <p class="meta">Type: Repeating section · Forms key: <code>protection.linked.items</code> · CRM: <code>policies.mortgageLinked[]</code> · create-child</p>
+      <p class="help">Child records:</p><ul><li>Lender or insurer → <code>policies.mortgageLinked[].provider</code></li><li>Type of mortgage-linked cover → <code>policies.mortgageLinked[].coverType</code></li><li>Sum assured or monthly benefit (£) → <code>policies.mortgageLinked[].sumAssured</code></li><li>Notes (start date, whether it is a condition of the mortgage) → <code>policies.mortgageLinked[].notes</code></li></ul><p class="help">Branching: Shown when Mortgage-linked cover = Yes. Each row → crm_protectionpolicy (source = Mortgage-linked).</p></article></section><section class="card"><h2>8. Protection needs</h2><p>Objectives only — this is not a recommendation. The adviser will complete a full protection review in line with FCA ICOBS / CONC expectations.</p><article class="q"><p class="w">Who would be financially affected if an applicant died or could not work? <em>Required</em></p>
+      <p class="meta">Type: Multi-choice · Forms key: <code>protection.whoToProtect</code> · CRM: <code>protectionNeeds.whoToProtect</code> · overwrite-if-empty</p>
+      <ul><li>Applicant 1 only</li><li>Applicant 2 / partner</li><li>Dependent children</li><li>Other family members</li><li>A business or guarantor</li><li>Nobody in particular</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">If you died, how would the mortgage and household bills be paid? <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>protection.deathImpact</code> · CRM: <code>protectionNeeds.deathImpact</code> · overwrite-if-empty</p>
+      <ul><li>Existing life cover would be enough</li><li>Partner’s income would cover it</li><li>We would need to sell the property</li><li>Family would help</li><li>We have not planned for this</li><li>Not sure — please advise</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">If you were diagnosed with a serious illness, how would you cope financially? <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>protection.illnessImpact</code> · CRM: <code>protectionNeeds.illnessImpact</code> · overwrite-if-empty</p>
+      <ul><li>Existing critical-illness or savings would be enough</li><li>We could manage on one income / sick pay</li><li>We would struggle within a few months</li><li>We have not planned for this</li><li>Not sure — please advise</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">If you could not work because of accident or sickness, how long could you meet the mortgage? <em>Required</em></p>
+      <p class="meta">Type: Dropdown · Forms key: <code>protection.incomeLossImpact</code> · CRM: <code>protectionNeeds.incomeLossImpact</code> · overwrite-if-empty</p>
+      <ul><li>Less than 1 month</li><li>1–3 months</li><li>3–6 months</li><li>6–12 months</li><li>More than 12 months</li><li>Not sure</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Which protection areas would you like us to review? (select all that apply) <em>Required</em></p>
+      <p class="meta">Type: Multi-choice · Forms key: <code>protection.priorities</code> · CRM: <code>protectionNeeds.priorities</code> · overwrite-if-empty</p>
+      <ul><li>Life cover for the mortgage</li><li>Critical illness</li><li>Income protection</li><li>Buildings and contents</li><li>Family / inheritance planning (trusts)</li><li>None at this stage — mortgage only</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Indicative monthly budget for any new protection (£), if known <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Number (£) · Forms key: <code>protection.monthlyBudget</code> · CRM: <code>protectionNeeds.monthlyBudget</code> · overwrite-if-empty</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Do you believe your existing cover (private + workplace + mortgage-linked) is already adequate? <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>protection.existingAdequate</code> · CRM: <code>protectionNeeds.existingAdequate</code> · overwrite-if-empty</p>
+      <ul><li>Yes</li><li>No</li><li>Unsure — please review</li></ul><p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Anything else your adviser should know about health, family or cover (optional) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: Long answer · Forms key: <code>protection.adviserNotes</code> · CRM: <code>protectionNeeds.adviserNotes</code> · audit-only</p>
+      <p class="help">Branching: Always shown.</p></article></section><section class="card"><h2>9. Declarations</h2><p>Accuracy, privacy and marketing. These answers are stored on the submission audit record. They do not overwrite case-stage or identity fields.</p><article class="q"><p class="w">I confirm the information I have given is true and complete to the best of my knowledge. I understand the adviser will still need supporting evidence (payslips, ID, bank statements) before a lender application is submitted. <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>decl.accuracy</code> · CRM: <code>declarations.accuracy</code> · audit-only</p>
+      <p class="help">Branching: Must be Yes to submit. The flow rejects a No.</p></article><article class="q"><p class="w">I understand you will use my personal data to provide mortgage and protection advice, and that this may include credit and identity checks with lenders and insurers, in line with your privacy notice and UK GDPR. <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>decl.privacy</code> · CRM: <code>declarations.privacy</code> · audit-only</p>
+      <p class="help">Branching: Must be Yes to submit.</p></article><article class="q"><p class="w">You may contact me about relevant mortgage or protection products after this case completes. <em>Required</em></p>
+      <p class="meta">Type: Choice · Forms key: <code>decl.marketing</code> · CRM: <code>declarations.marketing</code> · overwrite-if-empty</p>
+      <ul><li>Yes — email and phone</li><li>Email only</li><li>No thank you</li></ul><p class="help">Branching: Always shown. Soft opt-in is not assumed.</p></article><article class="q"><p class="w">I can provide recent evidence if asked (for example last 3 months’ payslips or SA302 / tax year overview). <em>Required</em></p>
+      <p class="meta">Type: Yes / No · Forms key: <code>decl.evidence</code> · CRM: <code>declarations.canProvideEvidence</code> · audit-only</p>
+      <p class="help">Branching: Always shown. Yes creates an evidence collection task; No creates a higher-priority evidence task.</p></article><article class="q"><p class="w">Upload a photo of your passport or driving licence (optional at this stage) <span class='opt'>Optional</span></p>
+      <p class="meta">Type: File upload · Forms key: <code>decl.idFile</code> · CRM: <code>evidence.identityUpload</code> · create-child</p>
+      <p class="help">Branching: Always shown. Optional.</p></article><article class="q"><p class="w">Type your full name as an electronic signature <em>Required</em></p>
+      <p class="meta">Type: Text · Forms key: <code>decl.signatureName</code> · CRM: <code>declarations.signatureName</code> · audit-only</p>
+      <p class="help">Branching: Always shown.</p></article><article class="q"><p class="w">Date of declaration <em>Required</em></p>
+      <p class="meta">Type: Date · Forms key: <code>decl.signatureDate</code> · CRM: <code>declarations.signatureDate</code> · audit-only</p>
+      <p class="help">Branching: Always shown.</p></article></section>
+</section>
+<section id="pa">
+<h2 style="font-size:30px">Power Automate</h2>
+<div class="card"><h3>CRM - Process Client Fact-Find Submission</h3><ol><li>When a new response is submitted (Microsoft Forms)</li><li>Get response details</li><li>Validate case reference and invitation ID</li><li>Create staged / immutable submission record</li><li>Map responses into CRM fields (review-first)</li><li>Create related policy and employer-benefit records</li><li>Hold proposed changes for review</li><li>Create adviser-review and evidence tasks</li><li>Update fact-find status</li><li>Send client acknowledgement</li><li>Record audit event</li></ol></div>
+<div class="card"><h3>CRM - Process Inbound Client Email</h3><ol><li>Office 365 Outlook: When a new email arrives in a shared mailbox (V2)</li><li>Normalise sender address</li><li>Match against Applicant 1 and Applicant 2 emails</li><li>One match: auto-link · none: unmatched task · many: manual case selection</li><li>Joint applicant: match both · forwarded: do not assume original sender is the client</li><li>Changed email address: hold for verification</li><li>Add to communication history</li><li>Retrieve latest five communications</li><li>AI extracts updateSummary, conversationSummary, proposedFacts, actions, replyDraft, requiresManualReview</li><li>Proposed facts go to the adviser-review queue</li><li>Draft reply for the adviser to send</li></ol></div>
+</section>
+<section id="expr">
+<h2 style="font-size:30px">Expressions</h2>
+<div class="card"><article class="q"><p class="w">Compose invitation ID <span class="opt">CRM - Send Client Fact-Find</span></p><p class="help">Stable invitation key stored on the case and pre-filled into Forms.</p><pre>concat('INV-', replace(outputs('Get_case')?['body/crm_caseref'], '-', ''), '-', formatDateTime(utcNow(), 'yyyy-MM'))</pre></article><article class="q"><p class="w">Build Forms deep link <span class="opt">CRM - Send Client Fact-Find</span></p><p class="help">Prefill case reference and invitation ID so the client cannot easily send an orphan response.</p><pre>concat(variables('formsLink'), '&amp;caseReference=', uriComponent(outputs('Get_case')?['body/crm_caseref']), '&amp;invitationId=', uriComponent(variables('invitationId')))</pre></article><article class="q"><p class="w">Get response details <span class="opt">CRM - Process Client Fact-Find Submission</span></p><p class="help">Read Microsoft Forms answers by question ID.</p><pre>body('Get_response_details')?['r8f2c1a0e4d64b1']</pre></article><article class="q"><p class="w">Validate case reference <span class="opt">CRM - Process Client Fact-Find Submission</span></p><p class="help">Reject submissions that do not match an open invitation.</p><pre>and(
+  not(empty(trim(body('Get_response_details')?['caseReference']))),
+  equals(
+    toLower(trim(body('Get_response_details')?['invitationId']))),
+    toLower(trim(outputs('Get_invitation')?['body/crm_invitationid']))
+  ),
+  not(equals(outputs('Get_invitation')?['body/crm_status'], 'Expired'))
+)</pre></article><article class="q"><p class="w">Stage immutable submission <span class="opt">CRM - Process Client Fact-Find Submission</span></p><p class="help">Write a write-once submission record. Later edits create a new row.</p><pre>concat('FFSUB-', outputs('Get_case')?['body/crm_caseref'], '-', formatDateTime(utcNow(), 'yyyyMMddHHmmss'))</pre></article><article class="q"><p class="w">Parse currency <span class="opt">CRM - Process Client Fact-Find Submission</span></p><p class="help">Normalise £62,000 / 62000 / 62k into a decimal for Dataverse currency columns.</p><pre>float(replace(replace(replace(replace(toLower(trim(items('Each_answer'))), '£', ''), ',', ''), 'k', '000'), ' ', ''))</pre></article><article class="q"><p class="w">Hold proposed change <span class="opt">CRM - Process Client Fact-Find Submission</span></p><p class="help">Never overwrite a verified or protected field. Create crm_proposedfact instead.</p><pre>if(
+  or(
+    equals(items('Map_fields')?['importBehaviour'], 'propose-review'),
+    equals(items('Map_fields')?['protected'], true)
+  ),
+  'Create_proposed_fact',
+  'Patch_if_empty'
+)</pre></article><article class="q"><p class="w">Days open <span class="opt">CRM - Fact-Find Invitation Reminders</span></p><p class="help">Weekday recurrence; act on day 3, 7, 10 and 14.</p><pre>div(sub(ticks(utcNow()), ticks(items('Each_invitation')?['crm_senton'])), 864000000000)</pre></article><article class="q"><p class="w">Normalise sender <span class="opt">CRM - Process Inbound Client Email</span></p><p class="help">Lowercase and trim the shared-mailbox From address before matching.</p><pre>toLower(trim(first(split(replace(triggerOutputs()?['body/from'], '&gt;', ''), '&lt;')))))</pre></article><article class="q"><p class="w">Detect forwarded message <span class="opt">CRM - Process Inbound Client Email</span></p><p class="help">Do not treat a forwarded original sender as an authenticated client identity.</p><pre>or(
+  startsWith(toLower(triggerOutputs()?['body/subject']), 'fw:'),
+  startsWith(toLower(triggerOutputs()?['body/subject']), 'fwd:'),
+  contains(toLower(triggerOutputs()?['body/body']), '---------- forwarded message ----------')
+)</pre></article><article class="q"><p class="w">Filter Applicant 1 / 2 emails <span class="opt">CRM - Process Inbound Client Email</span></p><p class="help">Match against both applicant emails on every open case.</p><pre>or(
+  equals(toLower(items('List_cases')?['crm_applicant1email']), variables('sender')),
+  equals(toLower(items('List_cases')?['crm_applicant2email']), variables('sender'))
+)</pre></article><article class="q"><p class="w">Route on match count <span class="opt">CRM - Process Inbound Client Email</span></p><p class="help">One match auto-links; zero creates unmatched task; two-plus waits for adviser case selection.</p><pre>if(equals(length(body('Filter_matches')), 1), 'Auto_link',
+  if(equals(length(body('Filter_matches')), 0), 'Unmatched_task', 'Manual_case_selection'))</pre></article><article class="q"><p class="w">Changed email hold <span class="opt">CRM - Process Inbound Client Email</span></p><p class="help">If the client states a new address, hold verification — never patch crm_applicant1email.</p><pre>and(
+  or(
+    contains(toLower(triggerOutputs()?['body/body']), 'new email'),
+    contains(toLower(triggerOutputs()?['body/body']), 'use this email')
+  ),
+  not(equals(variables('sender'), toLower(outputs('Get_case')?['body/crm_applicant1email'])))
+)</pre></article><article class="q"><p class="w">Latest five communications <span class="opt">CRM - Process Inbound Client Email</span></p><p class="help">Give AI Builder conversation context without dumping the whole file.</p><pre>take(reverse(sort(body('List_communications'), 'crm_receivedon')), 5)</pre></article><article class="q"><p class="w">AI Builder JSON schema <span class="opt">CRM - Process Inbound Client Email</span></p><p class="help">Force structured extraction. Proposed facts always go to the review queue.</p><pre>{
+  "updateSummary": "Short summary of what has changed",
+  "conversationSummary": "Summary of the latest message in the context of prior communications",
+  "proposedFacts": [
+    {
+      "crmField": "income.basicAnnual",
+      "proposedValue": "62000",
+      "sourceText": "my salary is now £62,000",
+      "confidence": "high"
+    }
+  ],
+  "actions": [
+    {
+      "action": "Confirm updated salary evidence",
+      "owner": "Adviser",
+      "priority": "Medium"
+    }
+  ],
+  "replyDraft": "Draft client acknowledgement",
+  "requiresManualReview": true
+}</pre></article><article class="q"><p class="w">Apply only after approval <span class="opt">CRM - Approve Proposed Client Fact</span></p><p class="help">Patch Dataverse only when adviser status = Approved and the field is in the allow-list for that record type.</p><pre>and(
+  equals(triggerOutputs()?['body/crm_status'], 'Approved'),
+  not(empty(triggerOutputs()?['body/crm_proposedvalue']))
+)</pre></article></div>
+</section>
+</main>
+</body></html>
