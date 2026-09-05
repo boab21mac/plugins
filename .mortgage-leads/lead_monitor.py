@@ -125,3 +125,24 @@ if __name__ == '__main__':
     print('alerted_ids', len(a.get('alerted_comment_ids') or []))
     print('videos', len(w.get('priority_video_ids') or []))
     print('brand', (w.get('brand') or {}).get('name'))
+
+
+def summarize_scan(comments, last_scan_at=None, min_score=4):
+    """Return dict with newer advice leads for timer/operator use."""
+    a = load_alerted()
+    alerted = set(a.get('alerted_comment_ids') or [])
+    leads = filter_new_leads(
+        comments,
+        alerted,
+        last_scan_at=last_scan_at or a.get('last_scan_at'),
+        min_score=min_score,
+        only_newer_than_scan=True,
+    )
+    return {
+        'last_scan_at': last_scan_at or a.get('last_scan_at'),
+        'input_comments': len(comments),
+        'new_leads': leads,
+        'new_lead_count': len(leads),
+        'alert_email': a.get('alert_email'),
+        'platforms': a.get('platforms') or {},
+    }
