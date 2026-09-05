@@ -65,9 +65,9 @@
     "pushover": "initiated_need_bob_connect"
   },
   "next_actions_for_bob": [
-    "Connect Pushover for phone alerts: https://connect.composio.dev/link/lk_I8vP46K3LYgB",
+    "Connect Pushover for phone alerts: https://connect.composio.dev/link/lk_x2ipSvDkFnQ0",
     "When ready: reconnect Facebook + X (paused per your request)"
   ],
-  "pushover_connect_url": "https://connect.composio.dev/link/lk_I8vP46K3LYgB",
-  "pushover_connect_note": "Fresh Composio Pushover link (~10m). Zapier backup: https://mcp.zapier.com/api/v1/connect-auth/PushoverCLIAPI?accountId=28580636"
+  "pushover_connect_url": "https://connect.composio.dev/link/lk_x2ipSvDkFnQ0",
+  "pushover_connect_note": "Fresh Composio Pushover link (expires ~10 minutes). Zapier backup: https://mcp.zapier.com/api/v1/connect-auth/PushoverCLIAPI?accountId=28580636"
 }
