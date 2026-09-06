@@ -181,8 +181,8 @@ Generated: 2026-09-06
 | Midas overdue | Was **9+** on **24 Jun** after earlier **89**; verify zero overdue and contact evidence | 2026-06-24 | Recurring failure mode |
 | Daily Sean huddle | **10 min**/day with Platform open; live task updates | 2026-05-26 / 06-26 | Process control |
 | Protection % | Lift from **~31%** toward team **~60%**; consistent discussion every mortgage case; premium quality (**£1.2k** vs **£2k**) | 2026-06-24 / 04-01 | Primary income lever |
-| Admin fees | Raise charging consistency toward **55–65%**; document waivers | 2024-04-13 / 06-05 | Ongoing |
-| Pipeline / written | Recover **£17.500** pipeline target; July–August catch-up; banked sparse until **Sep** | 2026-06-24 | Revenue risk |
+| Admin fees | Raise charging consistency toward **55–65%**; document waivers | 2026-04-13 / 06-05 | Ongoing |
+| Pipeline / written | Recover **£17,500** pipeline target; July–August catch-up; banked sparse until **Sep** | 2026-06-24 | Revenue risk |
 | Lead flow | Restore above **2–3**/week; model needs denser appointments | 2026-07-01 | Capacity/input risk |
 | Named cases | Jennifer & Mike Santander reopen (Sean); Alf McGee; FTB cladding docs; warm re-engaged viewer; Ruth McMullen / Santander threads | 2026-06-24 (+ May) | Case chase |
 | FTB report | Filtered **£275k–£385k** report + CRM caller notes (Mon/Tue/Fri rhythm) | 2026-06-24 | Confirm still running |
