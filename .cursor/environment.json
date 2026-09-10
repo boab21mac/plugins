@@ -1,0 +1,4 @@
+{
+  "name": "Cursor plugins marketplace",
+  "install": "bash .cursor/install.sh"
+}
